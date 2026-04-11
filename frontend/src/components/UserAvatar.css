@@ -1,0 +1,128 @@
+.ua-wrapper {
+  position: relative;
+}
+
+.ua-trigger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.ua-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0059BB 0%, #31A2FF 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  transition: box-shadow 0.2s;
+}
+.ua-trigger:hover .ua-circle {
+  box-shadow: 0 0 0 3px rgba(0, 89, 187, 0.2);
+}
+
+.ua-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 260px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  z-index: 999;
+  animation: ua-fade-in 0.15s ease-out;
+}
+
+@keyframes ua-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ua-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 4px 12px;
+}
+
+.ua-circle-sm {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0059BB 0%, #31A2FF 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.ua-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ua-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ua-email {
+  font-size: 12px;
+  color: #64748B;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ua-divider {
+  height: 1px;
+  background-color: #F1F5F9;
+  margin-bottom: 8px;
+}
+
+.ua-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: none;
+  background: none;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+}
+.ua-item:hover {
+  background-color: #F8FAFC;
+  color: #0F172A;
+}
+
+.ua-item.ua-logout {
+  color: #DC2626;
+}
+.ua-item.ua-logout:hover {
+  background-color: #FEF2F2;
+  color: #DC2626;
+}
