@@ -1,0 +1,612 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* Sidebar bottom links */
+.sidebar-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.sb-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #64748B;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 999px;
+  transition: all 0.2s;
+}
+
+.sb-link:hover {
+  background-color: #F1F5F9;
+  color: #0F172A;
+}
+
+/* User profile in navbar */
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.user-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.user-status {
+  font-size: 11px;
+  color: #64748B;
+  font-weight: 500;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Wrapper */
+.ns-wrapper {
+  padding: 0 40px 40px;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 32px;
+  max-width: 1400px;
+}
+
+/* Left Col */
+.ns-left {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ns-header h2 {
+  font-size: 28px;
+  font-weight: 800;
+  color: #111;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+
+.ns-breadcrumb {
+  font-weight: 800;
+  color: #94A3B8;
+  font-size: 24px;
+  letter-spacing: 1px;
+}
+
+.ns-header p {
+  color: #64748B;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* Form Card */
+.ns-form-card {
+  background-color: #FFFFFF;
+  border-radius: 36px;
+  padding: 40px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.ns-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.ns-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ns-field label,
+.ns-focus-section label,
+.ns-notes-section label {
+  font-size: 12px;
+  font-weight: 800;
+  color: #475569;
+}
+
+.ns-select-wrapper {
+  position: relative;
+}
+
+.ns-select-wrapper select {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 14px 16px 14px 16px;
+  border: 1px solid #E2E8F0;
+  border-radius: 999px;
+  background-color: #F8FAFC;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.ns-select-wrapper select:focus {
+  border-color: #0059BB;
+}
+
+.color-dot {
+  position: absolute;
+  bottom: -10px;
+  left: 16px;
+  width: 32px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.dot-navy {
+  background-color: #1E293B;
+}
+
+.ns-field input[type="date"],
+.ns-field input[type="datetime-local"] {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #E2E8F0;
+  border-radius: 999px;
+  background-color: #F8FAFC;
+  font-size: 14px;
+  font-weight: 500;
+  color: #111;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.ns-field input:focus {
+  border-color: #0059BB;
+}
+
+/* Focus Selector */
+.ns-focus-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ns-focus-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ns-focus-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #0D9488;
+  letter-spacing: 0.5px;
+}
+
+.ns-focus-btns {
+  display: flex;
+  gap: 12px;
+}
+
+.focus-btn {
+  flex: 1;
+  padding: 14px;
+  border: 2px solid #E2E8F0;
+  border-radius: 999px;
+  background-color: #F8FAFC;
+  font-size: 16px;
+  font-weight: 700;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.focus-btn:hover {
+  border-color: #CBD5E1;
+  background-color: #F1F5F9;
+}
+
+.focus-btn.active {
+  border-color: #0D9488;
+  background-color: #F0FDFA;
+  color: #0D9488;
+  box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.15);
+}
+
+.ns-focus-range {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  font-weight: 700;
+  color: #94A3B8;
+  letter-spacing: 0.5px;
+  padding: 0 4px;
+}
+
+/* Notes */
+.ns-notes-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ns-notes-section textarea {
+  width: 100%;
+  padding: 16px 20px;
+  border: 1px solid #E2E8F0;
+  border-radius: 24px;
+  background-color: #F8FAFC;
+  font-size: 14px;
+  font-weight: 500;
+  color: #111;
+  font-family: inherit;
+  outline: none;
+  resize: vertical;
+  min-height: 120px;
+  transition: border-color 0.2s;
+}
+
+.ns-notes-section textarea::placeholder {
+  color: #94A3B8;
+}
+
+.ns-notes-section textarea:focus {
+  border-color: #0059BB;
+}
+
+/* Actions */
+.ns-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.btn-cancel {
+  padding: 14px 32px;
+  border: 1px solid #E2E8F0;
+  border-radius: 999px;
+  background-color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 700;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+  background-color: #F1F5F9;
+}
+
+.btn-save-session {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  border: none;
+  border-radius: 999px;
+  background-color: #1E293B;
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 16px rgba(30, 41, 59, 0.2);
+}
+
+.btn-save-session:hover {
+  background-color: #0F172A;
+}
+
+/* Archive Link */
+.ns-archive-row {
+  display: flex;
+  margin-top: 8px;
+}
+
+/* Right Sidebar — Add Subject */
+.ns-right {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Add Subject Card */
+.ns-add-subject-card {
+  background-color: #FFFFFF;
+  border-radius: 36px;
+  padding: 36px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ns-add-subject-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #1E293B;
+}
+
+.ns-add-subject-header h3 {
+  font-size: 16px;
+  font-weight: 800;
+  color: #111;
+  margin: 0;
+}
+
+/* Inputs trong add subject card */
+.ns-add-subject-card .ns-field input[type="text"],
+.ns-add-subject-card .ns-field input[type="number"] {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #E2E8F0;
+  border-radius: 999px;
+  background-color: #F8FAFC;
+  font-size: 14px;
+  font-weight: 500;
+  color: #111;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.ns-add-subject-card .ns-field input:focus {
+  border-color: #0059BB;
+}
+
+.ns-add-subject-card .ns-field textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  background-color: #F8FAFC;
+  font-size: 14px;
+  font-weight: 500;
+  color: #111;
+  font-family: inherit;
+  outline: none;
+  resize: vertical;
+  min-height: 80px;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.ns-add-subject-card .ns-field textarea::placeholder,
+.ns-add-subject-card .ns-field input::placeholder {
+  color: #94A3B8;
+}
+
+.ns-add-subject-card .ns-field textarea:focus {
+  border-color: #0059BB;
+}
+
+.ns-required {
+  color: #DC2626;
+}
+
+/* Feedback messages */
+.ns-msg {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 14px;
+  border-radius: 12px;
+  margin: 0;
+}
+
+.ns-msg-error {
+  color: #DC2626;
+  background-color: #FEF2F2;
+}
+
+.ns-msg-success {
+  color: #0D9488;
+  background-color: #F0FDFA;
+}
+
+/* Button thêm môn học */
+.btn-add-subject {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px;
+  border: none;
+  border-radius: 999px;
+  background-color: #1E293B;
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 16px rgba(30, 41, 59, 0.2);
+  width: 100%;
+  font-family: inherit;
+}
+
+.btn-add-subject:hover:not(:disabled) {
+  background-color: #0F172A;
+}
+
+.btn-add-subject:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Danh sách môn học */
+.ns-subject-list {
+  border-top: 1px solid #F1F5F9;
+  padding-top: 20px;
+}
+
+.ns-subject-list-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 12px 0;
+}
+
+.ns-subject-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ns-subject-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.ns-subject-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #0D9488;
+  flex-shrink: 0;
+}
+
+
+/* Reuse filter pills from Sessions */
+.ns-right .filter-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Grey Card */
+.ns-grey-card {
+  background-color: #F1F5F9;
+  border-radius: 36px;
+  padding: 32px;
+}
+
+.ns-grey-card h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 24px;
+}
+
+/* Next Scheduled */
+.ns-grey-card.ns-next-sch {
+  padding: 24px 32px;
+  border-radius: 28px;
+}
+
+.ns-grey-card.ns-next-sch h4 {
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #64748B;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+/* Blue Card */
+.ns-blue-card {
+  background: linear-gradient(180deg, #0077F0 0%, #0059BB 100%);
+  border-radius: 36px;
+  padding: 32px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  min-height: 240px;
+}
+
+.ns-blue-card h4 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.ns-blue-card p {
+  font-size: 12px;
+  opacity: 0.9;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.ns-blue-card .peak-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: 32px;
+  gap: 6px;
+}
+
+.ns-blue-card .p-bar {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-radius: 12px 12px 0 0;
+  width: 100%;
+}
+
+.ns-blue-card .p-bar.ns-active {
+  background-color: white;
+}
+
+.ns-blue-card .p-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 10px;
+  opacity: 0.7;
+  font-weight: 600;
+}
+
+/* Toast Notification */
+.ns-toast {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  padding: 16px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 1000;
+  animation: slideInRight 0.3s ease-out;
+}
+.ns-toast-success {
+  background-color: #10B981;
+  color: white;
+}
+.ns-toast-error {
+  background-color: #EF4444;
+  color: white;
+}
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
