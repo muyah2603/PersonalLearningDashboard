@@ -9,6 +9,8 @@ import UserAvatar from '../../components/UserAvatar';
 import NotificationBell from '../../components/NotificationBell';
 import { getSummary, getBySubject, getHeatmap, getFocusScore, getGoalProgress } from '../../services/analytics.service';
 import './Analytics.css';
+import { BrainCircuit } from 'lucide-react';
+import ChatBot from '../../components/ChatBot';
 
 const Analytics = () => {
   const navigate = useNavigate();
@@ -69,6 +71,7 @@ const Analytics = () => {
             <Link to="/goals" className="nav-item"><Target size={18} /><span>Goals</span></Link>
             <Link to="/analytics" className="nav-item active"><BarChart2 size={18} /><span>Analytics</span></Link>
             <Link to="/profile" className="nav-item"><User size={18} /><span>Profile</span></Link>
+            <Link to="/ai-coach" className="nav-item"><BrainCircuit size={18} /><span>AI Coach</span></Link>
           </nav>
         </div>
         <div className="sidebar-bottom">
@@ -218,6 +221,7 @@ const Analytics = () => {
           )}
         </div>
       </main>
+      <ChatBot />
     </div>
   );
 };

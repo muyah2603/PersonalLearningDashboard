@@ -3,10 +3,25 @@
   position: relative;
 }
 
+/* Bell button */
 .noti-trigger {
-  position: relative;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
 
+/* ❌ bỏ hover tím → dùng hover nhẹ */
+.noti-trigger:hover {
+  background: #F1F5F9;
+  transform: translateY(-1px);
+}
+
+/* icon luôn xám */
+.noti-trigger svg {
+  color: #64748B;
+  transition: color 0.2s;
+}
+
+/* Badge */
 .noti-badge {
   position: absolute;
   top: -4px;
@@ -23,6 +38,22 @@
   justify-content: center;
   padding: 0 4px;
   border: 2px solid #F8FAFC;
+}
+
+/* 🔔 rung nhẹ */
+@keyframes bellShake {
+  0% { transform: rotate(0); }
+  20% { transform: rotate(-10deg); }
+  40% { transform: rotate(8deg); }
+  60% { transform: rotate(-6deg); }
+  80% { transform: rotate(4deg); }
+  100% { transform: rotate(0); }
+}
+
+/* khi có unread → rung */
+.noti-trigger.has-unread svg {
+  animation: bellShake 0.5s ease;
+  transform-origin: top center;
 }
 
 /* Panel */
@@ -44,6 +75,7 @@
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+/* Header */
 .noti-panel-header {
   display: flex;
   justify-content: space-between;
@@ -73,6 +105,7 @@
   border-radius: 6px;
   transition: background 0.15s;
 }
+
 .btn-mark-all:hover {
   background: #EBF4FF;
 }
@@ -86,11 +119,13 @@
 .noti-list::-webkit-scrollbar {
   width: 4px;
 }
+
 .noti-list::-webkit-scrollbar-thumb {
   background: #E2E8F0;
   border-radius: 999px;
 }
 
+/* Empty */
 .noti-empty {
   display: flex;
   flex-direction: column;
@@ -99,6 +134,7 @@
   padding: 40px 20px;
   gap: 12px;
 }
+
 .noti-empty p {
   color: #94A3B8;
   font-size: 13px;
@@ -115,16 +151,20 @@
   cursor: pointer;
   transition: background 0.15s;
 }
+
 .noti-item:hover {
   background: #F8FAFC;
 }
+
 .noti-item.unread {
   background: #F0F7FF;
 }
+
 .noti-item.unread:hover {
   background: #E8F1FD;
 }
 
+/* Dot */
 .noti-dot-col {
   width: 8px;
   padding-top: 6px;
@@ -139,6 +179,7 @@
   display: block;
 }
 
+/* Body */
 .noti-body {
   flex: 1;
   min-width: 0;
@@ -151,6 +192,7 @@
   line-height: 1.5;
   margin: 0 0 4px;
 }
+
 .noti-item.unread .noti-content {
   font-weight: 600;
   color: #0F172A;
@@ -162,6 +204,7 @@
   font-weight: 500;
 }
 
+/* Button read */
 .btn-noti-read {
   background: none;
   border: none;
@@ -175,6 +218,7 @@
   flex-shrink: 0;
   transition: all 0.15s;
 }
+
 .btn-noti-read:hover {
   background: #E2E8F0;
   color: #0059BB;

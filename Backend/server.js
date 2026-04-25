@@ -12,6 +12,8 @@ const goalRoutes = require('./src/routes/goal.routes');
 const analyticsRoutes = require('./src/routes/analytics.routes');
 const suggestionRoutes = require('./src/routes/suggestion.routes');
 const notificationRoutes = require('./src/routes/notification.routes');
+const coachRoutes = require('./src/routes/coach.routes');
+const chatbotRoutes = require('./src/routes/chatbot.routes');
 
 connectDB();
 
@@ -34,6 +36,8 @@ app.use('/api/goals', goalRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/suggestions', suggestionRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/ai', coachRoutes);
+app.use('/api/chatbot', chatbotRoutes);
 
 app.use((req, res) => res.status(404).json({ message: 'Route không tồn tại' }));
 

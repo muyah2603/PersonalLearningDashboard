@@ -12,6 +12,8 @@ import { getSummary } from '../../services/analytics.service';
 import { getSessions } from '../../services/session.service';
 import { getGoals } from '../../services/goal.service';
 import './Profile.css';
+import { BrainCircuit } from 'lucide-react';
+import ChatBot from '../../components/ChatBot';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -136,6 +138,7 @@ const Profile = () => {
             <Link to="/goals" className="nav-item"><Target size={18} /><span>Goals</span></Link>
             <Link to="/analytics" className="nav-item"><BarChart2 size={18} /><span>Analytics</span></Link>
             <Link to="/profile" className="nav-item active"><User size={18} /><span>Profile</span></Link>
+            <Link to="/ai-coach" className="nav-item"><BrainCircuit size={18} /><span>AI Coach</span></Link>
           </nav>
         </div>
         <div className="sidebar-bottom">
@@ -367,7 +370,7 @@ const Profile = () => {
           </div>
         </div>
       )}
-
+        <ChatBot />
     </div>
   );
 };

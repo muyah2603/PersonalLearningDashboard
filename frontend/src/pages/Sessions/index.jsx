@@ -16,13 +16,15 @@ import {
   Clock,
   Zap,
   ArrowRight,
-  Database
+  Database,
+  BrainCircuit
 } from 'lucide-react';
 import BtnNewSession from '../../components/BtnNewSession';
 import UserAvatar from '../../components/UserAvatar';
 import NotificationBell from '../../components/NotificationBell';
 import { getSessions } from '../../services/session.service';
 import './Sessions.css';
+import ChatBot from '../../components/ChatBot';
 
 const Sessions = () => {
   const [sessionData, setSessionData] = useState([]);
@@ -173,6 +175,7 @@ const Sessions = () => {
               <User size={18} />
               <span>Profile</span>
             </Link>
+            <Link to="/ai-coach" className="nav-item"><BrainCircuit size={18} /><span>AI Coach</span></Link>
           </nav>
         </div>
 
@@ -335,6 +338,7 @@ const Sessions = () => {
           </div>
         </div>
       </main>
+      <ChatBot />
     </div>
   );
 };
