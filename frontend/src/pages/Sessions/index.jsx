@@ -34,17 +34,39 @@ const Sessions = () => {
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
 
   useEffect(() => {
+
+    const controller = new AbortController();
+
     const fetchSessions = async () => {
+
       try {
-        const { data } = await getSessions();
+
+        const { data } = await getSessions({
+          signal: controller.signal,
+        });
+
         setSessionData(data);
+
       } catch (err) {
-        console.error('Error fetching sessions:', err);
+
+        if (err.name !== 'CanceledError') {
+
+          console.error(
+            'Error fetching sessions:',
+            err
+          );
+        }
+
       } finally {
+
         setLoading(false);
       }
     };
+
     fetchSessions();
+
+    return () => controller.abort();
+
   }, []);
 
   const formatDuration = (start, end) => {

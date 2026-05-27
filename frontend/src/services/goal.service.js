@@ -1,8 +1,19 @@
 import API from './api';
 
-export const getGoals = () => API.get('/goals');
-export const getGoalProgress = () => API.get('/goals/progress');
-export const checkWarning = () => API.get('/goals/check-warning');
-export const createGoal = (data) => API.post('/goals', data);
-export const updateGoal = (id, data) => API.put(`/goals/${id}`, data);
-export const deleteGoal = (id) => API.delete(`/goals/${id}`);
+export const getGoals = (config = {}) =>
+  API.get('/goals', config);
+
+export const getGoalProgress = (config = {}) =>
+  API.get('/goals/progress', config);
+
+export const checkWarning = (config = {}) =>
+  API.post('/goals/check-warning', {}, config);
+
+export const createGoal = (data, config = {}) =>
+  API.post('/goals', data, config);
+
+export const updateGoal = (id, data, config = {}) =>
+  API.put(`/goals/${id}`, data, config);
+
+export const deleteGoal = (id, config = {}) =>
+  API.delete(`/goals/${id}`, config);

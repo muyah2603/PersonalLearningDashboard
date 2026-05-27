@@ -1,11 +1,81 @@
 import API from './api';
 
-export const register = (data) => API.post('/auth/register', data);
-export const login = (data) => API.post('/auth/login', data);
-export const loginWithGoogle = (credential) => API.post('/auth/google/login', { credential });
-export const getProfile = () => API.get('/auth/profile');
-export const changePassword = (data) => API.put('/auth/change-password', data);
-export const forgotPassword = (data) => API.post('/auth/forgot-password', data);
-export const uploadAvatar = (formData) => API.post('/auth/upload-avatar', formData, {
-  headers: { 'Content-Type': 'multipart/form-data' }
-});
+// ── Register ─────────────────────────────────────────────
+export const register = (
+  data,
+  config = {}
+) =>
+  API.post(
+    '/auth/register',
+    data,
+    config
+  );
+
+// ── Login ────────────────────────────────────────────────
+export const login = (
+  data,
+  config = {}
+) =>
+  API.post(
+    '/auth/login',
+    data,
+    config
+  );
+
+// ── Google Login ─────────────────────────────────────────
+export const loginWithGoogle = (
+  credential,
+  config = {}
+) =>
+  API.post(
+    '/auth/google/login',
+    { credential },
+    config
+  );
+
+// ── Get Profile ──────────────────────────────────────────
+export const getProfile = (
+  config = {}
+) =>
+  API.get(
+    '/auth/profile',
+    config
+  );
+
+// ── Change Password ──────────────────────────────────────
+export const changePassword = (
+  data,
+  config = {}
+) =>
+  API.put(
+    '/auth/change-password',
+    data,
+    config
+  );
+
+// ── Forgot Password ──────────────────────────────────────
+export const forgotPassword = (
+  data,
+  config = {}
+) =>
+  API.post(
+    '/auth/forgot-password',
+    data,
+    config
+  );
+
+// ── Upload Avatar ────────────────────────────────────────
+export const uploadAvatar = (
+  formData,
+  config = {}
+) =>
+  API.post(
+    '/auth/upload-avatar',
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      ...config,
+    }
+  );

@@ -15,6 +15,7 @@ import ChatBot from '../../components/ChatBot';
 const Analytics = () => {
   const navigate = useNavigate();
   const [summary, setSummary] = useState(null);
+  const [error, setError] = useState(null);
   const [subjects, setSubjects] = useState([]);
   const [heatmap, setHeatmap] = useState([]);
   const [focusScore, setFocusScore] = useState(0);
@@ -22,29 +23,76 @@ const Analytics = () => {
   const [period, setPeriod] = useState('week');
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchAll = async () => {
-      try {
-        const [sumRes, subRes, heatRes, focusRes, goalRes] = await Promise.all([
-          getSummary(period),
-          getBySubject(),
-          getHeatmap(),
-          getFocusScore(),
-          getGoalProgress(),
-        ]);
-        setSummary(sumRes.data);
-        setSubjects(subRes.data.sort((a, b) => b.totalHours - a.totalHours));
-        setHeatmap(heatRes.data);
-        setFocusScore(focusRes.data.focusScore);
-        setGoalProgress(goalRes.data);
-      } catch (err) {
-        console.error('Error fetching analytics', err);
-      } finally {
-        setLoading(false);
+useEffect(() => {
+
+  const controller = new AbortController();
+
+  const fetchAll = async () => {
+
+    try {
+
+      const [
+        sumRes,
+        subRes,
+        heatRes,
+        focusRes,
+        goalRes,
+      ] = await Promise.all([
+
+        getSummary(period, {
+          signal: controller.signal,
+        }),
+
+        getBySubject({
+          signal: controller.signal,
+        }),
+
+        getHeatmap({
+          signal: controller.signal,
+        }),
+
+        getFocusScore({
+          signal: controller.signal,
+        }),
+
+        getGoalProgress({
+          signal: controller.signal,
+        }),
+      ]);
+
+      setSummary(sumRes.data.data);
+
+      setSubjects(subRes.data.data || []);
+
+      setHeatmap(heatRes.data.data || []);
+
+      setFocusScore(
+        focusRes.data.data?.focusScore || 0
+      );
+
+      setGoalProgress(goalRes.data.data || []);
+
+    } catch (err) {
+
+      if (err.name !== 'CanceledError') {
+
+        console.error(
+          'Error fetching analytics data',
+          err
+        );
       }
-    };
-    fetchAll();
-  }, [period]);
+
+    } finally {
+
+      setLoading(false);
+    }
+  };
+
+  fetchAll();
+
+  return () => controller.abort();
+
+}, [period]);
 
   const getDayLabel = (dateStr) => {
     const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
@@ -78,7 +126,16 @@ const Analytics = () => {
           <BtnNewSession />
           <div className="sidebar-links">
             <Link to="/support" className="sb-link"><LifeBuoy size={16}/> Support</Link>
-            <Link to="/login" className="sb-link"><LogOut size={16}/> Sign Out</Link>
+            <button
+              className="sb-link"
+              onClick={() => {
+                logout();
+                navigate('/login');
+              }}
+            >
+              <LogOut size={16}/>
+              Sign Out
+            </button>
           </div>
         </div>
       </aside>

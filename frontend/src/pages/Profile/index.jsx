@@ -18,7 +18,7 @@ import ChatBot from '../../components/ChatBot';
 import './Profile.css';
 
 const Profile = () => {
-  const { updateUser } = useAuth();  // ← dùng để sync avatar lên navbar
+  const { updateUser, logout } = useAuth();  // ← dùng để sync avatar lên navbar
 
   const [user, setUser]       = useState(null);
   const navigate               = useNavigate();
@@ -39,33 +39,87 @@ const Profile = () => {
   const [showNewPwd,      setShowNewPwd]      = useState(false);
 
   useEffect(() => {
+
+    const controller = new AbortController();
+
     const fetchData = async () => {
+
       try {
-        const [profileRes, _summaryRes, sessionsRes, goalsRes] = await Promise.all([
-          getProfile(),
-          getSummary('month'),
-          getSessions(),
-          getGoals(),
+
+        const [
+          profileRes,
+          _summaryRes,
+          sessionsRes,
+          goalsRes,
+        ] = await Promise.all([
+
+          getProfile({
+            signal: controller.signal,
+          }),
+
+          getSummary('month', {
+            signal: controller.signal,
+          }),
+
+          getSessions({
+            signal: controller.signal,
+          }),
+
+          getGoals({
+            signal: controller.signal,
+          }),
         ]);
+
         setUser(profileRes.data);
 
-        const sessions           = sessionsRes.data;
-        const totalActualSeconds = sessions.reduce((sum, s) => sum + (s.actualDuration || 0), 0);
-        const uniqueSubjects     = new Set(sessions.map(s => s.subjectId?._id).filter(Boolean));
+        const sessions = sessionsRes.data;
+
+        const totalActualSeconds = sessions.reduce(
+          (sum, s) =>
+            sum + (s.actualDuration || 0),
+          0
+        );
+
+        const uniqueSubjects = new Set(
+          sessions
+            .map(s => s.subjectId?._id)
+            .filter(Boolean)
+        );
 
         setStats({
-          totalHours:   (totalActualSeconds / 3600).toFixed(1),
-          sessionCount: sessions.length,
-          subjectCount: uniqueSubjects.size,
-          goalCount:    goalsRes.data.length,
+          totalHours:
+            (totalActualSeconds / 3600).toFixed(1),
+
+          sessionCount:
+            sessions.length,
+
+          subjectCount:
+            uniqueSubjects.size,
+
+          goalCount:
+            goalsRes.data.length,
         });
+
       } catch (err) {
-        console.error('Error fetching profile data', err);
+
+        if (err.name !== 'CanceledError') {
+
+          console.error(
+            'Error fetching profile data',
+            err
+          );
+        }
+
       } finally {
+
         setLoading(false);
       }
     };
+
     fetchData();
+
+    return () => controller.abort();
+
   }, []);
 
   const memberSince = user?.createdAt
@@ -79,16 +133,16 @@ const Profile = () => {
   const handlePasswordChange = async (e) => {
     e.preventDefault();
     setPwdError(''); setPwdSuccess('');
-    if (newPassword !== confirmPassword) return setPwdError('Mật khẩu xác nhận không khớp.');
-    if (oldPassword === newPassword)     return setPwdError('Mật khẩu mới không được trùng với mật khẩu cũ.');
+    if (newPassword !== confirmPassword) return setPwdError('Passwords do not match.');
+    if (oldPassword === newPassword)     return setPwdError('New password must be different from the old password.');
     try {
       setPwdLoading(true);
       await changePassword({ oldPassword, newPassword });
-      setPwdSuccess('Đổi mật khẩu thành công!');
+      setPwdSuccess('Password changed successfully!');
       setOldPassword(''); setNewPassword(''); setConfirmPassword('');
       setTimeout(() => { setIsPwdModalOpen(false); setPwdSuccess(''); }, 2000);
     } catch (err) {
-      setPwdError(err.response?.data?.message || 'Có lỗi xảy ra khi đổi mật khẩu.');
+      setPwdError(err.response?.data?.message || 'Failed to change password.');
     } finally {
       setPwdLoading(false);
     }
@@ -112,7 +166,7 @@ const Profile = () => {
       updateUser({ avatar: newAvatarUrl });
 
     } catch (err) {
-      alert(err.response?.data?.message || 'Có lỗi xảy ra khi tải ảnh lên.');
+      alert(err.response?.data?.message || 'Failed to upload image.');
     } finally {
       setAvatarLoading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -142,7 +196,15 @@ const Profile = () => {
           <BtnNewSession />
           <div className="sidebar-links">
             <Link to="/support" className="sb-link"><LifeBuoy size={16} /> Support</Link>
-            <Link to="/login"   className="sb-link"><LogOut size={16} /> Sign Out</Link>
+            <button
+              className="sb-link"
+              onClick={() => {
+                logout();
+                navigate("/login");
+              }}
+            >
+              <LogOut size={16} /> Sign Out
+            </button>
           </div>
         </div>
       </aside>
