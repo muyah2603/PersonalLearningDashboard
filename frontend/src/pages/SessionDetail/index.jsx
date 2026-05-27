@@ -9,6 +9,7 @@ import UserAvatar from '../../components/UserAvatar';
 import BtnNewSession from '../../components/BtnNewSession';
 import '../NewSession/NewSession.css'; // Reusing NewSession styles
 import './SessionDetail.css';
+import { BrainCircuit } from 'lucide-react';
 
 const focusLabels = {
   1: 'LEVEL 1: PASSIVE REVIEW',
@@ -128,6 +129,7 @@ const SessionDetail = () => {
             <Link to="/profile" className="nav-item">
               <User size={18} /><span>Profile</span>
             </Link>
+            <Link to="/ai-coach" className="nav-item"><BrainCircuit size={18} /><span>AI Coach</span></Link>
           </nav>
         </div>
         

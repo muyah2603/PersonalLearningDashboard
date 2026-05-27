@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { 
   Library, 
   Landmark,
@@ -9,7 +9,6 @@ import {
   BarChart2, 
   User, 
   Search, 
-  Bell,
   Filter,
   Brain,
   TerminalSquare,
@@ -17,17 +16,22 @@ import {
   Clock,
   Zap,
   ArrowRight,
-  Database
+  Database,
+  BrainCircuit
 } from 'lucide-react';
 import BtnNewSession from '../../components/BtnNewSession';
 import UserAvatar from '../../components/UserAvatar';
+import NotificationBell from '../../components/NotificationBell';
 import { getSessions } from '../../services/session.service';
 import './Sessions.css';
+import ChatBot from '../../components/ChatBot';
 
 const Sessions = () => {
   const [sessionData, setSessionData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState('all');
+  const [searchParams] = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
 
   useEffect(() => {
     const fetchSessions = async () => {
@@ -69,13 +73,23 @@ const Sessions = () => {
   // Computations
   const now = new Date();
 
-  // Lấy danh sách subject thật từ sessions
-  const subjectNames = [...new Set(sessionData.map(s => s.subjectId?.name).filter(Boolean))];
+  // Lấy danh sách subject thật từ sessions (sắp xếp mới nhất trước)
+  const sortedSessions = [...sessionData].sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
+  const subjectNames = [...new Set(sortedSessions.map(s => s.subjectId?.name).filter(Boolean))];
+  
+  const displayedSubjects = subjectNames.slice(0, 2);
+  const hiddenSubjects = subjectNames.slice(2);
 
-  // Filter sessions theo subject đang chọn
-  const filteredSessions = activeFilter === 'all'
-    ? sessionData
-    : sessionData.filter(s => s.subjectId?.name === activeFilter);
+  // Filter sessions theo subject + search
+  const filteredSessions = sessionData.filter(s => {
+    const matchSubject = activeFilter === 'all' || s.subjectId?.name === activeFilter;
+    const q = searchQuery.toLowerCase().trim();
+    if (!q) return matchSubject;
+    const matchSearch = 
+      (s.subjectId?.name || '').toLowerCase().includes(q) ||
+      (s.notes || '').toLowerCase().includes(q);
+    return matchSubject && matchSearch;
+  });
   
   const weeklySessions = sessionData.filter(s => {
     const d = new Date(s.startTime);
@@ -161,6 +175,7 @@ const Sessions = () => {
               <User size={18} />
               <span>Profile</span>
             </Link>
+            <Link to="/ai-coach" className="nav-item"><BrainCircuit size={18} /><span>AI Coach</span></Link>
           </nav>
         </div>
 
@@ -175,12 +190,10 @@ const Sessions = () => {
         <header className="top-navbar">
           <div className="search-bar">
             <Search size={16} color="#94A3B8" />
-            <input type="text" placeholder="Search sessions..." />
+            <input type="text" placeholder="Search sessions..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
           </div>
           <div className="top-right">
-            <button className="icon-btn">
-              <Bell size={20} color="#64748B" />
-            </button>
+            <NotificationBell />
             <UserAvatar />
           </div>
         </header>
@@ -194,9 +207,21 @@ const Sessions = () => {
             </div>
             <div className="filter-pills">
               <button className={`pill ${activeFilter === 'all' ? 'active' : ''}`} onClick={() => setActiveFilter('all')}><Filter size={14}/> All Subjects</button>
-              {subjectNames.map(name => (
+              {displayedSubjects.map(name => (
                 <button key={name} className={`pill ${activeFilter === name ? 'active' : ''}`} onClick={() => setActiveFilter(name)}>{name}</button>
               ))}
+              {hiddenSubjects.length > 0 && (
+                <select 
+                  className={`pill dropdown-filter ${hiddenSubjects.includes(activeFilter) ? 'active' : ''}`}
+                  value={hiddenSubjects.includes(activeFilter) ? activeFilter : ""}
+                  onChange={(e) => setActiveFilter(e.target.value)}
+                >
+                  <option value="" disabled>More subjects...</option>
+                  {hiddenSubjects.map(name => (
+                    <option key={name} value={name}>{name}</option>
+                  ))}
+                </select>
+              )}
             </div>
           </div>
 
@@ -313,6 +338,7 @@ const Sessions = () => {
           </div>
         </div>
       </main>
+      <ChatBot />
     </div>
   );
 };

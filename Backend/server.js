@@ -12,6 +12,8 @@ const goalRoutes = require('./src/routes/goal.routes');
 const analyticsRoutes = require('./src/routes/analytics.routes');
 const suggestionRoutes = require('./src/routes/suggestion.routes');
 const notificationRoutes = require('./src/routes/notification.routes');
+const coachRoutes = require('./src/routes/coach.routes');
+const chatbotRoutes = require('./src/routes/chatbot.routes');
 
 connectDB();
 
@@ -22,6 +24,7 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+app.use('/public', express.static('public'));
 app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -33,6 +36,8 @@ app.use('/api/goals', goalRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/suggestions', suggestionRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/ai', coachRoutes);
+app.use('/api/chatbot', chatbotRoutes);
 
 app.use((req, res) => res.status(404).json({ message: 'Route không tồn tại' }));
 
@@ -110,17 +115,17 @@ app.listen(PORT, () => {
             html: `
             <div style="background:#f3f4f6;padding:40px 20px;font-family:'Segoe UI',Arial,sans-serif;">
               <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
-                <div style="background:linear-gradient(135deg,#D97706,#F59E0B);padding:28px 32px;text-align:center;">
-                  <div style="width:56px;height:56px;background:rgba(255,255,255,0.2);border-radius:50%;margin:0 auto 12px;line-height:56px;font-size:28px;">⚠️</div>
-                  <h1 style="margin:0;color:#ffffff;font-size:22px;">Warning: ${labelEn} without studying!</h1>
+                <div style="background:linear-gradient(135deg,#0059BB,#31A2FF);padding:28px 32px;text-align:center;">
+                <div style="width:56px;height:56px;background:rgba(255,255,255,0.2);border-radius:50%;margin:0 auto 12px;line-height:56px;font-size:28px;">📘</div>
+                <h1 style="margin:0;color:#ffffff;font-size:22px;">You haven't studied for ${labelEn}!</h1>
                 </div>
                 <div style="padding:28px 32px;">
                   <p style="color:#374151;font-size:15px;line-height:1.6;margin:0 0 20px;">
                     Hi <strong>${user.name || 'Student'}</strong>,<br>
                     We noticed that you <strong>haven't recorded any study sessions for ${labelEn} in a row</strong>.
                   </p>
-                  <div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;padding:16px;margin-bottom:20px;">
-                    <p style="margin:0;color:#92400E;font-size:14px;line-height:1.5;">
+                  <div style="background:#EBF4FF;border:1px solid #BDD6F2;border-radius:10px;padding:16px;margin-bottom:20px;">
+                  <p style="margin:0;color:#1E40AF;font-size:14px;line-height:1.5;">
                       💡 <strong>Tip:</strong> Consistency is key! Even 15–30 minutes a day can make a big difference in your learning progress.
                     </p>
                   </div>

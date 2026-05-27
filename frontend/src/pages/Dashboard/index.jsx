@@ -1,20 +1,24 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
-  Library, Landmark, LayoutDashboard, BookOpen, Target, BarChart2, User, Search, Bell,
+  Library, Landmark, LayoutDashboard, BookOpen, Target, BarChart2, User, Search,
   ArrowRight, Clock, Lightbulb, Zap, BookMarked, LifeBuoy, LogOut
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import BtnNewSession from '../../components/BtnNewSession';
 import UserAvatar from '../../components/UserAvatar';
+import NotificationBell from '../../components/NotificationBell';
 import { getSummary, getHeatmap, getFocusScore } from '../../services/analytics.service';
 import { getGoalProgress } from '../../services/goal.service';
 import { getSessions } from '../../services/session.service';
 import API from '../../services/api';
 import './Dashboard.css';
+import { BrainCircuit } from 'lucide-react';
+import ChatBot from '../../components/ChatBot';
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [summary, setSummary] = useState(null);
   const [heatmap, setHeatmap] = useState([]);
   const [focusScore, setFocusScore] = useState(0);
@@ -97,6 +101,7 @@ const Dashboard = () => {
             <Link to="/goals" className="nav-item"><Target size={18} /><span>Goals</span></Link>
             <Link to="/analytics" className="nav-item"><BarChart2 size={18} /><span>Analytics</span></Link>
             <Link to="/profile" className="nav-item"><User size={18} /><span>Profile</span></Link>
+            <Link to="/ai-coach" className="nav-item"><BrainCircuit size={18} /><span>AI Coach</span></Link>
           </nav>
         </div>
         <div className="sidebar-bottom">
@@ -113,10 +118,10 @@ const Dashboard = () => {
         <header className="top-navbar">
           <div className="search-bar">
             <Search size={16} color="#94A3B8" />
-            <input type="text" placeholder="Search..." />
+            <input type="text" placeholder="Search sessions..." onKeyDown={(e) => { if (e.key === 'Enter' && e.target.value.trim()) navigate(`/sessions?q=${encodeURIComponent(e.target.value.trim())}`); }} />
           </div>
           <div className="top-right">
-            <button className="icon-btn"><Bell size={20} color="#64748B" /></button>
+            <NotificationBell />
             <UserAvatar />
           </div>
         </header>
@@ -259,6 +264,7 @@ const Dashboard = () => {
           </div>
         )}
       </main>
+      <ChatBot />
     </div>
   );
 };

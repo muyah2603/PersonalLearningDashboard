@@ -2,13 +2,16 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Library, Landmark, LayoutDashboard, BookOpen, Target, BarChart2, User,
-  Search, Bell, Clock, TrendingUp, PlusCircle, Calendar, X,
+  Search, Clock, TrendingUp, PlusCircle, Calendar, X,
   AlertTriangle, CheckCircle, LifeBuoy, LogOut
 } from 'lucide-react';
 import BtnNewSession from '../../components/BtnNewSession';
 import UserAvatar from '../../components/UserAvatar';
+import NotificationBell from '../../components/NotificationBell';
 import { getGoalProgress, checkWarning, createGoal, deleteGoal } from '../../services/goal.service';
 import './Goals.css';
+import { BrainCircuit } from 'lucide-react';
+import ChatBot from '../../components/ChatBot';
 
 const Goals = () => {
   const [goals, setGoals] = useState([]);
@@ -16,6 +19,7 @@ const Goals = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ targetHours: '', targetMinutes: '', startDate: '', endDate: '' });
+  const [searchQuery, setSearchQuery] = useState('');
 
   const fetchData = async () => {
     try {
@@ -76,8 +80,19 @@ const Goals = () => {
     return themes[index % 3];
   };
 
-  const primaryGoal = goals.length > 0 ? goals[0] : null;
-  const otherGoals = goals.slice(1);
+  // Search filter
+  const q = searchQuery.toLowerCase().trim();
+  const searchedGoals = q 
+    ? goals.filter(g => 
+        formatTargetTime(g.targetHours).toLowerCase().includes(q) ||
+        formatDate(g.startDate).toLowerCase().includes(q) ||
+        formatDate(g.endDate).toLowerCase().includes(q) ||
+        String(g.completionPercent).includes(q)
+      )
+    : goals;
+
+  const primaryGoal = searchedGoals.length > 0 ? searchedGoals[0] : null;
+  const otherGoals = searchedGoals.slice(1);
 
   return (
     <div className="dashboard-layout">
@@ -94,6 +109,7 @@ const Goals = () => {
             <Link to="/goals" className="nav-item active"><Target size={18} /><span>Goals</span></Link>
             <Link to="/analytics" className="nav-item"><BarChart2 size={18} /><span>Analytics</span></Link>
             <Link to="/profile" className="nav-item"><User size={18} /><span>Profile</span></Link>
+            <Link to="/ai-coach" className="nav-item"><BrainCircuit size={18} /><span>AI Coach</span></Link>
           </nav>
         </div>
         <div className="sidebar-bottom">
@@ -110,10 +126,10 @@ const Goals = () => {
         <header className="top-navbar">
           <div className="search-bar">
             <Search size={16} color="#94A3B8" />
-            <input type="text" placeholder="Search goals..." />
+            <input type="text" placeholder="Search goals..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
           </div>
           <div className="top-right">
-            <button className="icon-btn"><Bell size={20} color="#64748B" /></button>
+            <NotificationBell />
             <UserAvatar />
           </div>
         </header>
@@ -301,6 +317,7 @@ const Goals = () => {
           </div>
         </div>
       )}
+        <ChatBot />
     </div>
   );
 };

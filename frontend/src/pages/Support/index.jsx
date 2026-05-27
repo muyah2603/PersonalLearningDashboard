@@ -1,13 +1,16 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
-  Library, Landmark, LayoutDashboard, BookOpen, Target, BarChart2, User, Search, Bell,
+  Library, Landmark, LayoutDashboard, BookOpen, Target, BarChart2, User, Search,
   LifeBuoy, LogOut, AlertTriangle, Clock, Zap, BookMarked, CheckCircle, Shield
 } from 'lucide-react';
 import BtnNewSession from '../../components/BtnNewSession';
 import UserAvatar from '../../components/UserAvatar';
+import NotificationBell from '../../components/NotificationBell';
 import './Support.css';
+import { BrainCircuit } from 'lucide-react';
 
 const Support = () => {
+  const navigate = useNavigate();
   const rules = [
     {
       icon: <AlertTriangle size={20} />,
@@ -75,6 +78,7 @@ const Support = () => {
             <Link to="/goals" className="nav-item"><Target size={18} /><span>Goals</span></Link>
             <Link to="/analytics" className="nav-item"><BarChart2 size={18} /><span>Analytics</span></Link>
             <Link to="/profile" className="nav-item"><User size={18} /><span>Profile</span></Link>
+            <Link to="/ai-coach" className="nav-item"><BrainCircuit size={18} /><span>AI Coach</span></Link>
           </nav>
         </div>
         <div className="sidebar-bottom">
@@ -91,10 +95,10 @@ const Support = () => {
         <header className="top-navbar">
           <div className="search-bar">
             <Search size={16} color="#94A3B8" />
-            <input type="text" placeholder="Search rules..." />
+            <input type="text" placeholder="Search sessions..." onKeyDown={(e) => { if (e.key === 'Enter' && e.target.value.trim()) navigate(`/sessions?q=${encodeURIComponent(e.target.value.trim())}`); }} />
           </div>
           <div className="top-right">
-            <button className="icon-btn"><Bell size={20} color="#64748B" /></button>
+            <NotificationBell />
             <UserAvatar />
           </div>
         </header>
