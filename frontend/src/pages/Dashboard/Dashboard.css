@@ -125,9 +125,9 @@
   align-items: center;
   gap: 8px;
   background-color: #E2E8F0;
-  padding: 10px 16px;
+  padding: 2px 14px;
   border-radius: 999px;
-  width: 320px;
+  width: 260px;
 }
 
 .search-bar input {

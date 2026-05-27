@@ -23,14 +23,18 @@ const UserAvatar = () => {
     navigate('/login');
   };
 
-  const name = user?.name || 'User';
+  const name     = user?.name || 'User';
   const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+  const avatar   = user?.avatar;   // ← lấy từ context, tự cập nhật khi updateUser() được gọi
 
   return (
     <div className="ua-wrapper" ref={ref}>
       <button className="ua-trigger" onClick={() => setOpen(!open)}>
         <div className="ua-circle">
-          <span>{initials}</span>
+          {avatar
+            ? <img src={avatar} alt={name} className="ua-avatar-img" />
+            : <span>{initials}</span>
+          }
         </div>
       </button>
 
@@ -38,14 +42,17 @@ const UserAvatar = () => {
         <div className="ua-dropdown">
           <div className="ua-header">
             <div className="ua-circle-sm">
-              <span>{initials}</span>
+              {avatar
+                ? <img src={avatar} alt={name} className="ua-avatar-img" />
+                : <span>{initials}</span>
+              }
             </div>
             <div className="ua-info">
               <span className="ua-name">{name}</span>
               <span className="ua-email">{user?.email}</span>
             </div>
           </div>
-          <div className="ua-divider"></div>
+          <div className="ua-divider" />
           <button className="ua-item" onClick={() => { setOpen(false); navigate('/profile'); }}>
             <User size={16} />
             <span>Profile</span>

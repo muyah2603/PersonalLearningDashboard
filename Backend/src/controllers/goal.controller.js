@@ -67,7 +67,11 @@ const checkInactivityWarning = async (req, res) => {
     });
 
     if (!existing) {
-      const label = diffMinutes >= 1440 ? `${Math.floor(diffMinutes / 1440)} ngày` : `${diffMinutes} phút`;
+      const label = diffMinutes >= 1440 
+        ? `${Math.floor(diffMinutes / 1440)} day(s)` 
+        : diffMinutes >= 60 
+          ? `${Math.floor(diffMinutes / 60)} hour(s)` 
+          : `${diffMinutes} minute(s)`;
 
       await Notification.create({
         userId: req.user._id,
@@ -85,17 +89,17 @@ const checkInactivityWarning = async (req, res) => {
           html: `
           <div style="background:#f3f4f6;padding:40px 20px;font-family:'Segoe UI',Arial,sans-serif;">
             <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
-              <div style="background:linear-gradient(135deg,#D97706,#F59E0B);padding:28px 32px;text-align:center;">
-                <div style="width:56px;height:56px;background:rgba(255,255,255,0.2);border-radius:50%;margin:0 auto 12px;line-height:56px;font-size:28px;">⚠️</div>
-                <h1 style="margin:0;color:#ffffff;font-size:22px;">Warning: ${label} without studying!</h1>
+              <div style="background:linear-gradient(135deg,#0059BB,#31A2FF);padding:28px 32px;text-align:center;">
+                <div style="width:56px;height:56px;background:rgba(255,255,255,0.2);border-radius:50%;margin:0 auto 12px;line-height:56px;font-size:28px;">📘</div>
+                <h1 style="margin:0;color:#ffffff;font-size:22px;">You haven't studied for ${label}!</h1>
               </div>
               <div style="padding:28px 32px;">
                 <p style="color:#374151;font-size:15px;line-height:1.6;margin:0 0 20px;">
                   Hi <strong>${userName}</strong>,<br>
                   We noticed that you <strong>haven't recorded any study sessions for ${label} in a row</strong>.
                 </p>
-                <div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;padding:16px;margin-bottom:20px;">
-                  <p style="margin:0;color:#92400E;font-size:14px;line-height:1.5;">
+                <div style="background:#EBF4FF;border:1px solid #BDD6F2;border-radius:10px;padding:16px;margin-bottom:20px;">
+                  <p style="margin:0;color:#1E40AF;font-size:14px;line-height:1.5;">
                     💡 <strong>Tip:</strong> Consistency is key! Even 15–30 minutes a day can make a big difference in your learning progress.
                   </p>
                 </div>

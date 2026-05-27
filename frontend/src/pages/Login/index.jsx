@@ -84,7 +84,7 @@ const Login = () => {
           <div className="clean-form-group">
             <div className="clean-labels">
               <label htmlFor="password" className="clean-label">Password</label>
-              <Link to="#" className="clean-link">Forgot Password?</Link>
+              <Link to="/forgot-password" className="clean-link">Forgot Password?</Link>
             </div>
             <div className="password-wrapper">
               <input 

@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Library, Landmark, LayoutDashboard, BookOpen, Target, BarChart2, User,
-  Search, Bell, Plus, Save, LifeBuoy, LogOut, BookMarked
+  Search, Plus, Save, LifeBuoy, LogOut, BookMarked
 } from 'lucide-react';
 import UserAvatar from '../../components/UserAvatar';
 import BtnNewSession from '../../components/BtnNewSession';
+import NotificationBell from '../../components/NotificationBell';
 import { getSubjects, createSubject } from '../../services/subject.service';
 import { createSession } from '../../services/session.service';
 import './NewSession.css';
@@ -194,10 +195,10 @@ const NewSession = () => {
         <header className="top-navbar">
           <div className="search-bar">
             <Search size={16} color="#94A3B8" />
-            <input type="text" placeholder="Search sessions..." />
+            <input type="text" placeholder="Search sessions..." onKeyDown={(e) => { if (e.key === 'Enter' && e.target.value.trim()) navigate(`/sessions?q=${encodeURIComponent(e.target.value.trim())}`); }} />
           </div>
           <div className="top-right">
-            <button className="icon-btn"><Bell size={20} color="#64748B" /></button>
+            <NotificationBell />
             <UserAvatar />
           </div>
         </header>

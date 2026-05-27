@@ -250,14 +250,20 @@
 .warning-banner {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px 24px;
-  background: linear-gradient(90deg, #FEF3C7, #FDE68A);
-  border: 1px solid #F59E0B;
+  gap: 16px;
+  padding: 18px 24px;
+  background: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  border-left: 4px solid #0059BB;
   border-radius: 16px;
-  color: #92400E;
+  color: #334155;
   font-size: 14px;
   font-weight: 600;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+.warning-banner svg {
+  color: #0059BB;
+  flex-shrink: 0;
 }
 
 /* EMPTY STATE */
