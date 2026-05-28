@@ -5,13 +5,13 @@ import {
   Search, LifeBuoy, LogOut, BrainCircuit, Lightbulb, RefreshCw,
   TrendingUp, Clock, Flame, Zap, AlertCircle
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
-import BtnNewSession from '../../components/BtnNewSession';
-import UserAvatar from '../../components/UserAvatar';
-import NotificationBell from '../../components/NotificationBell';
-import { getCoachData } from '../../services/coach.service';
-import ChatBot from '../../components/ChatBot';
-import './AICoach.css';
+import { useAuth }        from '../../context/AuthContext';
+import BtnNewSession      from '../../components/BtnNewSession';
+import UserAvatar         from '../../components/UserAvatar';
+import NotificationBell   from '../../components/NotificationBell';
+import { getCoachData }   from '../../services/coach.service';
+import ChatBot            from '../../components/ChatBot';
+import './Coach.css';
 
 const SUGG_TAGS = ['QUICK WIN', 'RECOMMENDED', 'PRO TIP', 'CHALLENGE', 'HABIT'];
 const getScoreClass = (level) => {
@@ -19,12 +19,13 @@ const getScoreClass = (level) => {
   return map[level] || 'level-average';
 };
 
-const AICoach = () => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const Coach = () => {
+  const navigate       = useNavigate();
+  const { user, logout } = useAuth();
+
+  const [data,     setData]     = useState(null);
+  const [loading,  setLoading]  = useState(true);
+  const [error,    setError]    = useState(null);
   const [spinning, setSpinning] = useState(false);
 
   const fetchCoach = useCallback(async (isRefresh = false) => {
@@ -45,13 +46,15 @@ const AICoach = () => {
   useEffect(() => { fetchCoach(); }, [fetchCoach]);
 
   const scoreBreakdown = data?.score ? [
-    { name: 'Study Time', key: 'time', pct: Math.min(100, data.score.value * 1.0), colorClass: 'time' },
-    { name: 'Focus Quality', key: 'focus', pct: Math.min(100, data.score.value * 0.9), colorClass: 'focus' },
-    { name: 'Consistency', key: 'consistency', pct: Math.min(100, data.score.value * 0.8), colorClass: 'consistency' },
+    { name: 'Study Time',    key: 'time',        pct: Math.min(100, data.score.value * 1.0), colorClass: 'time' },
+    { name: 'Focus Quality', key: 'focus',       pct: Math.min(100, data.score.value * 0.9), colorClass: 'focus' },
+    { name: 'Consistency',   key: 'consistency', pct: Math.min(100, data.score.value * 0.8), colorClass: 'consistency' },
   ] : [];
 
   return (
     <div className="coach-layout">
+
+      {/* SIDEBAR */}
       <aside className="sidebar">
         <div className="sidebar-top">
           <div className="brand-logo">
@@ -59,23 +62,27 @@ const AICoach = () => {
             <span className="brand-text">Learning</span>
           </div>
           <nav className="nav-menu">
-            <Link to="/dashboard"  className="nav-item"><LayoutDashboard size={18} /><span>Dashboard</span></Link>
-            <Link to="/sessions"   className="nav-item"><BookOpen size={18} /><span>Sessions</span></Link>
-            <Link to="/goals"      className="nav-item"><Target size={18} /><span>Goals</span></Link>
-            <Link to="/analytics"  className="nav-item"><BarChart2 size={18} /><span>Analytics</span></Link>
-            <Link to="/profile"    className="nav-item"><User size={18} /><span>Profile</span></Link>
-            <Link to="/ai-coach"   className="nav-item active"><BrainCircuit size={18} /><span>AI Coach</span></Link>
+            <Link to="/dashboard" className="nav-item"><LayoutDashboard size={18} /><span>Dashboard</span></Link>
+            <Link to="/sessions"  className="nav-item"><BookOpen size={18} /><span>Sessions</span></Link>
+            <Link to="/goals"     className="nav-item"><Target size={18} /><span>Goals</span></Link>
+            <Link to="/analytics" className="nav-item"><BarChart2 size={18} /><span>Analytics</span></Link>
+            <Link to="/ai-coach"  className="nav-item active"><BrainCircuit size={18} /><span>Coach</span></Link>
+            <Link to="/profile"   className="nav-item"><User size={18} /><span>Profile</span></Link>
           </nav>
         </div>
         <div className="sidebar-bottom">
           <BtnNewSession />
           <div className="sidebar-links">
             <Link to="/support" className="sb-link"><LifeBuoy size={16} /> Support</Link>
-            <Link to="/login"   className="sb-link"><LogOut size={16} /> Sign Out</Link>
+            {/* Fix FE-1: button gọi logout() thật sự */}
+            <button className="sb-link" onClick={() => { logout(); navigate('/login'); }}>
+              <LogOut size={16} /> Sign Out
+            </button>
           </div>
         </div>
       </aside>
 
+      {/* MAIN */}
       <main className="main-content">
         <header className="top-navbar">
           <div className="search-bar">
@@ -96,9 +103,11 @@ const AICoach = () => {
         </header>
 
         <div className="coach-body">
+
+          {/* BANNER */}
           <div className="coach-banner">
             <div className="banner-left">
-              <h2>AI Study Coach{user?.name ? `, ${user.name}` : ''}</h2>
+              <h2>Coach{user?.name ? `, ${user.name}` : ''}</h2>
               <p>"Analyze your study behavior - personalized recommendations every week."</p>
             </div>
             {data?.score && (
@@ -110,6 +119,7 @@ const AICoach = () => {
             )}
           </div>
 
+          {/* REFRESH */}
           <div className="coach-refresh-row">
             <button
               className={`btn-refresh ${spinning ? 'spinning' : ''}`}
@@ -121,13 +131,15 @@ const AICoach = () => {
             </button>
           </div>
 
+          {/* LOADING */}
           {loading && (
             <div className="coach-loading">
               <div className="spinner" />
-              <span>Analyzing your learning data..</span>
+              <span>Analyzing your learning data...</span>
             </div>
           )}
 
+          {/* ERROR */}
           {!loading && error && (
             <div className="coach-error">
               <AlertCircle size={16} style={{ display: 'inline', marginRight: 8 }} />
@@ -135,8 +147,11 @@ const AICoach = () => {
             </div>
           )}
 
+          {/* DATA */}
           {!loading && data && (
             <div className="coach-grid">
+
+              {/* LEFT — Insights */}
               <div className="coach-card">
                 <span className="card-section-label">WEEKLY INSIGHTS</span>
                 <h3 className="card-title">Weekly Review</h3>
@@ -156,9 +171,12 @@ const AICoach = () => {
                 </div>
               </div>
 
+              {/* RIGHT — Score + Suggestions */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+
+                {/* Score Breakdown */}
                 <div className="coach-card">
-                  <span className="card-section-label">Component Scores</span>
+                  <span className="card-section-label">COMPONENT SCORES</span>
                   <h3 className="card-title">Study Score Breakdown</h3>
                   <div className="score-breakdown">
                     {scoreBreakdown.map((row) => (
@@ -175,6 +193,7 @@ const AICoach = () => {
                   </div>
                 </div>
 
+                {/* Suggestions */}
                 <div className="coach-dark-card">
                   <div className="dark-card-header">
                     <Lightbulb size={18} color="#2DD4BF" />
@@ -192,6 +211,7 @@ const AICoach = () => {
                     ))}
                   </div>
                 </div>
+
               </div>
             </div>
           )}
@@ -203,4 +223,4 @@ const AICoach = () => {
   );
 };
 
-export default AICoach;
+export default Coach;

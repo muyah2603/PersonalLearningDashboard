@@ -1,112 +1,74 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
-  Library, Landmark, LayoutDashboard, BookOpen, Target, BarChart2, User,
+  Landmark, LayoutDashboard, BookOpen, Target, BarChart2, User,
   Search, BookMarked, ArrowRight, Quote, LifeBuoy, LogOut, Zap
 } from 'lucide-react';
-import BtnNewSession from '../../components/BtnNewSession';
-import UserAvatar from '../../components/UserAvatar';
-import NotificationBell from '../../components/NotificationBell';
+import { useAuth }        from '../../context/AuthContext';
+import BtnNewSession      from '../../components/BtnNewSession';
+import UserAvatar         from '../../components/UserAvatar';
+import NotificationBell   from '../../components/NotificationBell';
 import { getSummary, getBySubject, getHeatmap, getFocusScore, getGoalProgress } from '../../services/analytics.service';
+import { BrainCircuit }   from 'lucide-react';
+import ChatBot            from '../../components/ChatBot';
 import './Analytics.css';
-import { BrainCircuit } from 'lucide-react';
-import ChatBot from '../../components/ChatBot';
 
 const Analytics = () => {
-  const navigate = useNavigate();
-  const [summary, setSummary] = useState(null);
-  const [error, setError] = useState(null);
-  const [subjects, setSubjects] = useState([]);
-  const [heatmap, setHeatmap] = useState([]);
-  const [focusScore, setFocusScore] = useState(0);
+  const navigate     = useNavigate();
+  const { logout }   = useAuth();
+
+  const [summary,      setSummary]      = useState(null);
+  const [error,        setError]        = useState(null);
+  const [subjects,     setSubjects]     = useState([]);
+  const [heatmap,      setHeatmap]      = useState([]);
+  const [focusScore,   setFocusScore]   = useState(0);
   const [goalProgress, setGoalProgress] = useState([]);
-  const [period, setPeriod] = useState('week');
-  const [loading, setLoading] = useState(true);
+  const [period,       setPeriod]       = useState('week');
+  const [loading,      setLoading]      = useState(true);
 
-useEffect(() => {
-
-  const controller = new AbortController();
-
-  const fetchAll = async () => {
-
+  const fetchAll = async (signal) => {
+    setError(null);
+    setLoading(true);
     try {
-
-      const [
-        sumRes,
-        subRes,
-        heatRes,
-        focusRes,
-        goalRes,
-      ] = await Promise.all([
-
-        getSummary(period, {
-          signal: controller.signal,
-        }),
-
-        getBySubject({
-          signal: controller.signal,
-        }),
-
-        getHeatmap({
-          signal: controller.signal,
-        }),
-
-        getFocusScore({
-          signal: controller.signal,
-        }),
-
-        getGoalProgress({
-          signal: controller.signal,
-        }),
+      const [sumRes, subRes, heatRes, focusRes, goalRes] = await Promise.all([
+        getSummary(period,  { signal }),
+        getBySubject(       { signal }),
+        getHeatmap(         { signal }),
+        getFocusScore(      { signal }),
+        getGoalProgress(    { signal }),
       ]);
 
-      setSummary(sumRes.data.data);
-
-      setSubjects(subRes.data.data || []);
-
-      setHeatmap(heatRes.data.data || []);
-
-      setFocusScore(
-        focusRes.data.data?.focusScore || 0
-      );
-
-      setGoalProgress(goalRes.data.data || []);
+      setSummary(sumRes.data);
+      setSubjects(subRes.data           || []);
+      setHeatmap(heatRes.data           || []);
+      setFocusScore(focusRes.data?.focusScore || 0);
+      setGoalProgress(goalRes.data      || []);
 
     } catch (err) {
-
-      if (err.name !== 'CanceledError') {
-
-        console.error(
-          'Error fetching analytics data',
-          err
-        );
-      }
-
+      if (err.name !== 'CanceledError')
+        setError('Failed to load analytics. Please try again.');
     } finally {
-
       setLoading(false);
     }
   };
 
-  fetchAll();
-
-  return () => controller.abort();
-
-}, [period]);
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchAll(controller.signal);
+    return () => controller.abort();
+  }, [period]);
 
   const getDayLabel = (dateStr) => {
     const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
     return days[new Date(dateStr).getDay()];
   };
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today          = new Date().toISOString().slice(0, 10);
   const maxHeatmapMins = Math.max(1, ...heatmap.map(h => h.totalMinutes));
-
-  const subjectThemes = ['theme-green', 'theme-purple', 'theme-blue', 'theme-gray'];
+  const subjectThemes  = ['theme-green', 'theme-purple', 'theme-blue', 'theme-gray'];
 
   return (
     <div className="dashboard-layout">
-      {/* SIDEBAR */}
       <aside className="sidebar">
         <div className="sidebar-top">
           <div className="brand-logo">
@@ -115,37 +77,36 @@ useEffect(() => {
           </div>
           <nav className="nav-menu">
             <Link to="/dashboard" className="nav-item"><LayoutDashboard size={18} /><span>Dashboard</span></Link>
-            <Link to="/sessions" className="nav-item"><BookOpen size={18} /><span>Sessions</span></Link>
-            <Link to="/goals" className="nav-item"><Target size={18} /><span>Goals</span></Link>
+            <Link to="/sessions"  className="nav-item"><BookOpen size={18} /><span>Sessions</span></Link>
+            <Link to="/goals"     className="nav-item"><Target size={18} /><span>Goals</span></Link>
             <Link to="/analytics" className="nav-item active"><BarChart2 size={18} /><span>Analytics</span></Link>
-            <Link to="/profile" className="nav-item"><User size={18} /><span>Profile</span></Link>
-            <Link to="/ai-coach" className="nav-item"><BrainCircuit size={18} /><span>AI Coach</span></Link>
+            <Link to="/ai-coach"  className="nav-item"><BrainCircuit size={18} /><span>Coach</span></Link>
+            <Link to="/profile"   className="nav-item"><User size={18} /><span>Profile</span></Link>
           </nav>
         </div>
         <div className="sidebar-bottom">
           <BtnNewSession />
           <div className="sidebar-links">
             <Link to="/support" className="sb-link"><LifeBuoy size={16}/> Support</Link>
-            <button
-              className="sb-link"
-              onClick={() => {
-                logout();
-                navigate('/login');
-              }}
-            >
-              <LogOut size={16}/>
-              Sign Out
+            <button className="sb-link" onClick={() => { logout(); navigate('/login'); }}>
+              <LogOut size={16}/> Sign Out
             </button>
           </div>
         </div>
       </aside>
 
-      {/* MAIN CONTENT */}
       <main className="main-content">
         <header className="top-navbar">
           <div className="search-bar">
             <Search size={16} color="#94A3B8" />
-            <input type="text" placeholder="Search sessions..." onKeyDown={(e) => { if (e.key === 'Enter' && e.target.value.trim()) navigate(`/sessions?q=${encodeURIComponent(e.target.value.trim())}`); }} />
+            <input
+              type="text"
+              placeholder="Search sessions..."
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && e.target.value.trim())
+                  navigate(`/sessions?q=${encodeURIComponent(e.target.value.trim())}`);
+              }}
+            />
           </div>
           <div className="top-right">
             <NotificationBell />
@@ -159,12 +120,24 @@ useEffect(() => {
             <p>Your learning performance overview with data from your actual study sessions.</p>
           </div>
 
+          {/* FE-4: Error state */}
+          {error && (
+            <div style={{ margin: '8px 0 16px', padding: '16px 24px', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '16px', color: '#991B1B', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>{error}</span>
+              <button
+                onClick={() => { const c = new AbortController(); fetchAll(c.signal); }}
+                style={{ background: '#EF4444', color: '#fff', border: 'none', borderRadius: '8px', padding: '8px 16px', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}
+              >
+                Retry
+              </button>
+            </div>
+          )}
+
           {loading ? (
             <div style={{ padding: '60px 0', textAlign: 'center', color: '#64748B' }}>Loading analytics...</div>
-          ) : (
+          ) : !error && (
             <div className="analytics-grid">
-              
-              {/* 1. WEEKLY CHART CARD - Planned vs Actual (Heatmap) */}
+
               <div className="chart-card">
                 <div className="chart-header">
                   <div className="ch-left">
@@ -176,31 +149,24 @@ useEffect(() => {
                   </div>
                   <div className="ch-right">
                     <div className="segmented-control">
-                      <button className={`seg-btn ${period === 'week' ? 'active' : ''}`} onClick={() => setPeriod('week')}>WEEK</button>
+                      <button className={`seg-btn ${period === 'week'  ? 'active' : ''}`} onClick={() => setPeriod('week')}>WEEK</button>
                       <button className={`seg-btn ${period === 'month' ? 'active' : ''}`} onClick={() => setPeriod('month')}>MONTH</button>
                     </div>
                   </div>
                 </div>
-
                 <div className="chart-body">
                   <div className="chart-bars">
-                    {heatmap.map((d, i) => {
+                    {heatmap.map((d) => {
                       const heightPercent = (d.totalMinutes / maxHeatmapMins) * 100;
                       const isToday = d.date === today;
                       return (
-                        <div key={i} className="chart-col">
+                        <div key={d.date} className="chart-col">
                           <div className="bar-wrapper" style={{ height: 'calc(100% - 24px)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-                            <div 
+                            <div
                               className={`front-bar ${isToday ? 'active' : ''}`}
-                              style={{ 
-                                height: `${Math.max(heightPercent, 4)}%`, 
-                                width: '60%', 
-                                borderRadius: '8px 8px 0 0',
-                                backgroundColor: isToday ? '#0059BB' : d.totalMinutes > 0 ? '#BDD6F2' : '#F1F5F9',
-                                transition: 'height 0.3s'
-                              }}
+                              style={{ height: `${Math.max(heightPercent, 4)}%`, width: '60%', borderRadius: '8px 8px 0 0', backgroundColor: isToday ? '#0059BB' : d.totalMinutes > 0 ? '#BDD6F2' : '#F1F5F9', transition: 'height 0.3s' }}
                               title={`${(d.totalMinutes / 60).toFixed(1)}h`}
-                            ></div>
+                            />
                           </div>
                           <span className={`bar-label ${isToday ? 'active-label' : ''}`} style={{ fontSize: '10px', fontWeight: 800, color: isToday ? '#0059BB' : '#64748B', marginTop: '8px' }}>
                             {getDayLabel(d.date)}
@@ -212,11 +178,8 @@ useEffect(() => {
                 </div>
               </div>
 
-              {/* 2. TOP SUBJECTS CARD */}
               <div className="subjects-card">
-                <div className="sub-header">
-                  <h4>Study Time by Subject</h4>
-                </div>
+                <div className="sub-header"><h4>Study Time by Subject</h4></div>
                 <div className="sub-list">
                   {subjects.length === 0 ? (
                     <p style={{ color: '#94A3B8', fontSize: '13px' }}>No subjects recorded yet.</p>
@@ -224,9 +187,7 @@ useEffect(() => {
                     subjects.slice(0, 5).map((sub, i) => (
                       <div key={sub.subjectId} className="sub-item">
                         <div className="sub-left">
-                          <div className={`sub-icon ${subjectThemes[i % 4]}`}>
-                            <BookMarked size={18} />
-                          </div>
+                          <div className={`sub-icon ${subjectThemes[i % 4]}`}><BookMarked size={18} /></div>
                           <div className="sub-text">
                             <h5>{sub.subjectName}</h5>
                             <span>{sub.totalHours}h studied</span>
@@ -239,7 +200,6 @@ useEffect(() => {
                 </div>
               </div>
 
-              {/* 3. FOCUS SCORE + GOAL PROGRESS CARD */}
               <div className="quote-card" style={{ justifyContent: 'space-between' }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
@@ -257,10 +217,10 @@ useEffect(() => {
                     <span style={{ fontSize: '10px', fontWeight: 800, letterSpacing: '1px', opacity: 0.7 }}>ACTIVE GOAL</span>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: '8px' }}>
                       <span style={{ fontSize: '14px', fontWeight: 700 }}>{goalProgress[0].actualHours}h / {goalProgress[0].targetHours}h</span>
-                      <span style={{ fontSize: '20px', fontWeight: 800 }}>{goalProgress[0].percent}%</span>
+                      <span style={{ fontSize: '20px', fontWeight: 800 }}>{goalProgress[0].completionPercent}%</span>
                     </div>
                     <div style={{ width: '100%', height: '6px', backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: '4px', marginTop: '8px', overflow: 'hidden' }}>
-                      <div style={{ width: `${goalProgress[0].percent}%`, height: '100%', backgroundColor: '#fff', borderRadius: '4px' }}></div>
+                      <div style={{ width: `${goalProgress[0].completionPercent}%`, height: '100%', backgroundColor: '#fff', borderRadius: '4px' }} />
                     </div>
                   </div>
                 )}
@@ -278,6 +238,7 @@ useEffect(() => {
           )}
         </div>
       </main>
+
       <ChatBot />
     </div>
   );

@@ -77,8 +77,9 @@ const Support = () => {
             <Link to="/sessions" className="nav-item"><BookOpen size={18} /><span>Sessions</span></Link>
             <Link to="/goals" className="nav-item"><Target size={18} /><span>Goals</span></Link>
             <Link to="/analytics" className="nav-item"><BarChart2 size={18} /><span>Analytics</span></Link>
-            <Link to="/profile" className="nav-item"><User size={18} /><span>Profile</span></Link>
-            <Link to="/ai-coach" className="nav-item"><BrainCircuit size={18} /><span>AI Coach</span></Link>
+
+            <Link to="/ai-coach" className="nav-item"><BrainCircuit size={18} /><span>Coach</span></Link>
+            <Link to="/profile"   className="nav-item"><User size={18} /><span>Profile</span></Link>
           </nav>
         </div>
         <div className="sidebar-bottom">

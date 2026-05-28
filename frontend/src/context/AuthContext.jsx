@@ -4,14 +4,15 @@ import { getProfile } from '../services/auth.service';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser]       = useState(null);
+  const [user,    setUser]    = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) { setLoading(false); return; }
+
     getProfile()
-      .then((res) => setUser(res.data))
+      .then((res) => setUser(res.data))  // Fix: backend trả { data: {...} }
       .catch(() => localStorage.removeItem('token'))
       .finally(() => setLoading(false));
   }, []);
@@ -26,9 +27,6 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  // Merge partial updates vào user hiện tại
-  // Dùng sau khi upload avatar, đổi tên, v.v.
-  // VD: updateUser({ avatar: 'https://...' })
   const updateUser = (partial) => {
     setUser(prev => prev ? { ...prev, ...partial } : prev);
   };

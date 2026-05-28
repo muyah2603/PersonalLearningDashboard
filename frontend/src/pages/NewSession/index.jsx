@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
-  Library, Landmark, LayoutDashboard, BookOpen, Target, BarChart2, User,
-  Search, Plus, Save, LifeBuoy, LogOut, BookMarked
+  Landmark, LayoutDashboard, BookOpen, Target, BarChart2, User,
+  Search, Plus, Save, LifeBuoy, LogOut, BookMarked, BrainCircuit
 } from 'lucide-react';
-import UserAvatar from '../../components/UserAvatar';
-import BtnNewSession from '../../components/BtnNewSession';
+import UserAvatar       from '../../components/UserAvatar';
+import BtnNewSession    from '../../components/BtnNewSession';
 import NotificationBell from '../../components/NotificationBell';
+import ChatBot          from '../../components/ChatBot';
+import { useAuth }      from '../../context/AuthContext';
 import { getSubjects, createSubject } from '../../services/subject.service';
-import { createSession } from '../../services/session.service';
+import { createSession }              from '../../services/session.service';
 import './NewSession.css';
 
 const focusLabels = {
@@ -20,39 +22,37 @@ const focusLabels = {
 };
 
 const NewSession = () => {
-  const navigate = useNavigate();
-  const [subjects, setSubjects] = useState([]);
-  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
-  const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
+  const navigate     = useNavigate();
+  const { logout }   = useAuth();
+
+  const [subjects,        setSubjects]        = useState([]);
+  const [toast,           setToast]           = useState({ show: false, message: '', type: 'success' });
+  const [loading,         setLoading]         = useState(false);
+  const [errorMsg,        setErrorMsg]        = useState('');
+  const [subjectLoading,  setSubjectLoading]  = useState(false);
+  const [newSubjectForm,  setNewSubjectForm]  = useState({ name: '', description: '', targetHours: '' });
+
+  const [form, setForm] = useState({
+    subjectId:   '',
+    sessionDate: new Date().toISOString().substring(0, 10),
+    startTime:   '',
+    endTime:     '',
+    focusLevel:  1,
+    notes:       ''
+  });
 
   const showToastMsg = (message, type = 'success') => {
     setToast({ show: true, message, type });
-    setTimeout(() => {
-      setToast({ show: false, message: '', type: 'success' });
-    }, 3000);
+    setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 3000);
   };
-
-  const [subjectLoading, setSubjectLoading] = useState(false);
-  const [newSubjectForm, setNewSubjectForm] = useState({ name: '', description: '', targetHours: '' });
-
-  const [form, setForm] = useState({
-    subjectId: '',
-    sessionDate: new Date().toISOString().substring(0, 10),
-    startTime: '',
-    endTime: '',
-    focusLevel: 1,
-    notes: ''
-  });
 
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
-        const { data } = await getSubjects();
+        const res = await getSubjects();
+        const data = res.data ?? [];
         setSubjects(data);
-        if (data.length > 0) {
-          setForm(prev => ({ ...prev, subjectId: data[0]._id }));
-        }
+        if (data.length > 0) setForm(prev => ({ ...prev, subjectId: data[0]._id }));
       } catch (err) {
         console.error('Error loading subjects:', err);
       }
@@ -60,56 +60,42 @@ const NewSession = () => {
     fetchSubjects();
   }, []);
 
-  const handleChange = (e) => {
-    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+  const handleChange = (e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleNewSubjectChange = (e) => {
     let { name, value } = e.target;
-    if (name === 'targetHours') {
-      value = value.replace(/[^0-9]/g, '');
-    }
+    if (name === 'targetHours') value = value.replace(/[^0-9]/g, '');
     setNewSubjectForm(prev => ({ ...prev, [name]: value }));
   };
 
   const handleCreateSubject = async () => {
     const newName = newSubjectForm.name.trim();
-    if (!newName) {
-      showToastMsg('Please enter subject name', 'error');
-      return;
-    }
+    if (!newName) { showToastMsg('Please enter subject name', 'error'); return; }
 
-    const isDuplicate = subjects.some(
-      (sub) => sub.name.trim().toLowerCase() === newName.toLowerCase()
-    );
-
-    if (isDuplicate) {
-      showToastMsg('Subject name already exists', 'error');
-      return;
-    }
+    const isDuplicate = subjects.some(s => s.name.trim().toLowerCase() === newName.toLowerCase());
+    if (isDuplicate) { showToastMsg('Subject name already exists', 'error'); return; }
 
     setSubjectLoading(true);
     try {
       const payload = {
         name: newName,
-        ...(newSubjectForm.description && { description: newSubjectForm.description.trim() }),
-        ...(newSubjectForm.targetHours && { targetHours: Number(newSubjectForm.targetHours) })
+        ...(newSubjectForm.description  && { description:  newSubjectForm.description.trim() }),
+        ...(newSubjectForm.targetHours  && { targetHours:  Number(newSubjectForm.targetHours) }),
       };
-      const { data } = await createSubject(payload);
+      const res  = await createSubject(payload);
+      const data = res.data ?? res; // interceptor unwrap
       setSubjects(prev => [...prev, data]);
       setForm(prev => ({ ...prev, subjectId: data._id }));
       setNewSubjectForm({ name: '', description: '', targetHours: '' });
       showToastMsg(`Added subject "${data.name}"`, 'success');
     } catch (err) {
-      showToastMsg(err.response?.data?.message || 'Error creating subject', 'error');
+      showToastMsg(err.response?.data?.error?.message || 'Error creating subject', 'error');
     } finally {
       setSubjectLoading(false);
     }
   };
 
-  const handleFocus = (level) => {
-    setForm(prev => ({ ...prev, focusLevel: level }));
-  };
+  const handleFocus = (level) => setForm(prev => ({ ...prev, focusLevel: level }));
 
   const handleSaveSession = async () => {
     if (!form.subjectId || !form.startTime || !form.endTime) {
@@ -120,21 +106,20 @@ const NewSession = () => {
       setErrorMsg('End time must be after start time');
       return;
     }
-    
     setLoading(true);
     setErrorMsg('');
     try {
       await createSession({
-        subjectId: form.subjectId,
-        startTime: new Date(form.startTime).toISOString(),
-        endTime: new Date(form.endTime).toISOString(),
-        focusLevel: form.focusLevel,
-        notes: form.notes
+        subjectId:  form.subjectId,
+        startTime:  new Date(form.startTime).toISOString(),
+        endTime:    new Date(form.endTime).toISOString(),
+        focusLevel: Number(form.focusLevel),
+        notes:      form.notes,
       });
       showToastMsg('Session saved successfully!', 'success');
       setTimeout(() => navigate('/sessions'), 1500);
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || 'Error saving session');
+      setErrorMsg(err.response?.data?.error?.message || 'Error saving session');
     } finally {
       setLoading(false);
     }
@@ -143,49 +128,32 @@ const NewSession = () => {
   return (
     <div className="dashboard-layout">
       {toast.show && (
-        <div className={`ns-toast ns-toast-${toast.type}`}>
-          {toast.message}
-        </div>
+        <div className={`ns-toast ns-toast-${toast.type}`}>{toast.message}</div>
       )}
+
       {/* SIDEBAR */}
       <aside className="sidebar">
         <div className="sidebar-top">
           <div className="brand-logo">
-            <div className="logo-icon">
-              <Landmark size={20} color="white" />
-            </div>
+            <div className="logo-icon"><Landmark size={20} color="white" /></div>
             <span className="brand-text">Learning</span>
           </div>
-
           <nav className="nav-menu">
-            <Link to="/dashboard" className="nav-item">
-              <LayoutDashboard size={18} />
-              <span>Dashboard</span>
-            </Link>
-            <Link to="/sessions" className="nav-item active">
-              <BookOpen size={18} />
-              <span>Sessions</span>
-            </Link>
-            <Link to="/goals" className="nav-item">
-              <Target size={18} />
-              <span>Goals</span>
-            </Link>
-            <Link to="/analytics" className="nav-item">
-              <BarChart2 size={18} />
-              <span>Analytics</span>
-            </Link>
-            <Link to="/profile" className="nav-item">
-              <User size={18} />
-              <span>Profile</span>
-            </Link>
+            <Link to="/dashboard" className="nav-item"><LayoutDashboard size={18} /><span>Dashboard</span></Link>
+            <Link to="/sessions"  className="nav-item active"><BookOpen size={18} /><span>Sessions</span></Link>
+            <Link to="/goals"     className="nav-item"><Target size={18} /><span>Goals</span></Link>
+            <Link to="/analytics" className="nav-item"><BarChart2 size={18} /><span>Analytics</span></Link>
+            <Link to="/ai-coach"  className="nav-item"><BrainCircuit size={18} /><span>Coach</span></Link>
+            <Link to="/profile"   className="nav-item"><User size={18} /><span>Profile</span></Link>
           </nav>
         </div>
-
         <div className="sidebar-bottom">
           <BtnNewSession />
           <div className="sidebar-links">
             <Link to="/support" className="sb-link"><LifeBuoy size={16}/> Support</Link>
-            <Link to="/login" className="sb-link"><LogOut size={16}/> Sign Out</Link>
+            <button className="sb-link" onClick={() => { logout(); navigate('/login'); }}>
+              <LogOut size={16}/> Sign Out
+            </button>
           </div>
         </div>
       </aside>
@@ -195,7 +163,14 @@ const NewSession = () => {
         <header className="top-navbar">
           <div className="search-bar">
             <Search size={16} color="#94A3B8" />
-            <input type="text" placeholder="Search sessions..." onKeyDown={(e) => { if (e.key === 'Enter' && e.target.value.trim()) navigate(`/sessions?q=${encodeURIComponent(e.target.value.trim())}`); }} />
+            <input
+              type="text"
+              placeholder="Search sessions..."
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && e.target.value.trim())
+                  navigate(`/sessions?q=${encodeURIComponent(e.target.value.trim())}`);
+              }}
+            />
           </div>
           <div className="top-right">
             <NotificationBell />
@@ -206,15 +181,18 @@ const NewSession = () => {
         <div className="ns-header" style={{ padding: '0 40px 24px 40px' }}>
           <div>
             <h2>Study Sessions <span className="ns-breadcrumb">&gt; NEW SESSION</span></h2>
-            <p>Your chronological map of cognitive growth and mastery.</p>
-            {errorMsg && <p style={{ color: '#DC2626', marginTop: '10px', fontSize: '14px', fontWeight: '500' }}>{errorMsg}</p>}
+            <p>Your chronological map of cognitive growth and mastery. Add a new subject first, then set your study time and start learning effectively.</p>
+            {errorMsg && (
+              <p style={{ color: '#DC2626', marginTop: '10px', fontSize: '14px', fontWeight: '500' }}>
+                {errorMsg}
+              </p>
+            )}
           </div>
         </div>
 
         <div className="ns-wrapper">
           {/* LEFT */}
           <div className="ns-left">
-            {/* FORM CARD */}
             <div className="ns-form-card">
 
               {/* Row 1 */}
@@ -224,19 +202,19 @@ const NewSession = () => {
                   <div className="ns-select-wrapper">
                     <select name="subjectId" value={form.subjectId} onChange={handleChange}>
                       {subjects.length === 0 ? (
-                        <option value="">No subject available (Please create in Goal / Dashboard)</option>
+                        <option value="">No subject available</option>
                       ) : (
                         subjects.map(sub => (
                           <option key={sub._id} value={sub._id}>{sub.name}</option>
                         ))
                       )}
                     </select>
-                    <div className="color-dot dot-navy"></div>
+                    <div className="color-dot dot-navy" />
                   </div>
                 </div>
                 <div className="ns-field">
                   <label>Session Date</label>
-                  <input type="date" name="sessionDate" value={form.sessionDate} onChange={handleChange}/>
+                  <input type="date" name="sessionDate" value={form.sessionDate} onChange={handleChange} />
                 </div>
               </div>
 
@@ -244,11 +222,11 @@ const NewSession = () => {
               <div className="ns-row">
                 <div className="ns-field">
                   <label>Start Time</label>
-                  <input type="datetime-local" name="startTime" value={form.startTime} onChange={handleChange}/>
+                  <input type="datetime-local" name="startTime" value={form.startTime} onChange={handleChange} />
                 </div>
                 <div className="ns-field">
                   <label>End Time (Projected)</label>
-                  <input type="datetime-local" name="endTime" value={form.endTime} onChange={handleChange}/>
+                  <input type="datetime-local" name="endTime" value={form.endTime} onChange={handleChange} />
                 </div>
               </div>
 
@@ -260,9 +238,8 @@ const NewSession = () => {
                 </div>
                 <div className="ns-focus-btns">
                   {[1,2,3,4,5].map(n => (
-                    <button 
-                      key={n} 
-                      type="button"
+                    <button
+                      key={n} type="button"
                       className={`focus-btn ${form.focusLevel === n ? 'active' : ''}`}
                       onClick={() => handleFocus(n)}
                     >{n}</button>
@@ -277,20 +254,20 @@ const NewSession = () => {
               {/* Notes */}
               <div className="ns-notes-section">
                 <label>Session Goals & Research Hypothesis</label>
-                <textarea 
-                  name="notes" 
-                  placeholder="Outline the specific questions you intend to answer or the synthesis goals for this session..."
+                <textarea
+                  name="notes"
+                  placeholder="Outline the specific questions you intend to answer..."
                   value={form.notes}
                   onChange={handleChange}
                   rows={5}
-                ></textarea>
+                />
               </div>
 
               {/* Actions */}
               <div className="ns-actions">
                 <button type="button" className="btn-cancel" onClick={() => navigate('/sessions')}>Cancel</button>
                 <button type="button" className="btn-save-session" onClick={handleSaveSession} disabled={loading}>
-                  <Save size={16}/>
+                  <Save size={16} />
                   {loading ? 'Saving...' : 'Save Session'}
                 </button>
               </div>
@@ -303,7 +280,7 @@ const NewSession = () => {
             </div>
           </div>
 
-          {/* RIGHT — Form thêm môn học */}
+          {/* RIGHT */}
           <div className="ns-right">
             <div className="ns-add-subject-card">
               <div className="ns-add-subject-header">
@@ -314,8 +291,7 @@ const NewSession = () => {
               <div className="ns-field">
                 <label>Subject Name <span className="ns-required">*</span></label>
                 <input
-                  type="text"
-                  name="name"
+                  type="text" name="name"
                   placeholder="Ex: Data Structures"
                   value={newSubjectForm.name}
                   onChange={handleNewSubjectChange}
@@ -326,7 +302,7 @@ const NewSession = () => {
                 <label>Description</label>
                 <textarea
                   name="description"
-                  placeholder="Short description of the subject..."
+                  placeholder="Short description..."
                   value={newSubjectForm.description}
                   onChange={handleNewSubjectChange}
                   rows={3}
@@ -336,9 +312,7 @@ const NewSession = () => {
               <div className="ns-field">
                 <label>Target Hours</label>
                 <input
-                  type="text"
-                  inputMode="numeric"
-                  name="targetHours"
+                  type="text" inputMode="numeric" name="targetHours"
                   placeholder="Ex: 50"
                   value={newSubjectForm.targetHours}
                   onChange={handleNewSubjectChange}
@@ -346,8 +320,7 @@ const NewSession = () => {
               </div>
 
               <button
-                type="button"
-                className="btn-add-subject"
+                type="button" className="btn-add-subject"
                 onClick={handleCreateSubject}
                 disabled={subjectLoading}
               >
@@ -358,6 +331,8 @@ const NewSession = () => {
           </div>
         </div>
       </main>
+
+      <ChatBot />
     </div>
   );
 };

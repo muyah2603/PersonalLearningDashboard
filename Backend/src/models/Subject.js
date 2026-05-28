@@ -15,4 +15,4 @@ const subjectSchema = new mongoose.Schema(
 // Fix DB-IDX-1: compound index cho query find({ userId }).sort({ name: 1 })
 subjectSchema.index({ userId: 1, name: 1 });
 
-module.exports = mongoose.model('Subject', notificationSchema);
+module.exports = mongoose.model('Subject', subjectSchema);

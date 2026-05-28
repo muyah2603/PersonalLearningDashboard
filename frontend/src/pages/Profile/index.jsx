@@ -12,7 +12,6 @@ import UserAvatar from '../../components/UserAvatar';
 import NotificationBell from '../../components/NotificationBell';
 import { getProfile, changePassword, uploadAvatar } from '../../services/auth.service';
 import { getSummary } from '../../services/analytics.service';
-import { getSessions } from '../../services/session.service';
 import { getGoals } from '../../services/goal.service';
 import ChatBot from '../../components/ChatBot';
 import './Profile.css';
@@ -39,87 +38,34 @@ const Profile = () => {
   const [showNewPwd,      setShowNewPwd]      = useState(false);
 
   useEffect(() => {
-
     const controller = new AbortController();
 
     const fetchData = async () => {
-
       try {
-
-        const [
-          profileRes,
-          _summaryRes,
-          sessionsRes,
-          goalsRes,
-        ] = await Promise.all([
-
-          getProfile({
-            signal: controller.signal,
-          }),
-
-          getSummary('month', {
-            signal: controller.signal,
-          }),
-
-          getSessions({
-            signal: controller.signal,
-          }),
-
-          getGoals({
-            signal: controller.signal,
-          }),
+        const [profileRes, summaryRes, goalsRes] = await Promise.all([
+          getProfile(       { signal: controller.signal }),  // dùng controller.signal trực tiếp
+          getSummary('all', { signal: controller.signal }),
+          getGoals(         { signal: controller.signal }),
         ]);
 
         setUser(profileRes.data);
-
-        const sessions = sessionsRes.data;
-
-        const totalActualSeconds = sessions.reduce(
-          (sum, s) =>
-            sum + (s.actualDuration || 0),
-          0
-        );
-
-        const uniqueSubjects = new Set(
-          sessions
-            .map(s => s.subjectId?._id)
-            .filter(Boolean)
-        );
-
         setStats({
-          totalHours:
-            (totalActualSeconds / 3600).toFixed(1),
-
-          sessionCount:
-            sessions.length,
-
-          subjectCount:
-            uniqueSubjects.size,
-
-          goalCount:
-            goalsRes.data.length,
+          totalHours:   summaryRes.data?.totalHours   ?? 0,
+          sessionCount: summaryRes.data?.sessionCount ?? 0,
+          subjectCount: 0,
+          goalCount:    goalsRes.data?.length         ?? 0,
         });
 
       } catch (err) {
-
-        if (err.name !== 'CanceledError') {
-
-          console.error(
-            'Error fetching profile data',
-            err
-          );
-        }
-
+        if (err.name !== 'CanceledError')
+          console.error('Error fetching profile data', err);
       } finally {
-
         setLoading(false);
       }
     };
 
     fetchData();
-
     return () => controller.abort();
-
   }, []);
 
   const memberSince = user?.createdAt
@@ -188,8 +134,8 @@ const Profile = () => {
             <Link to="/sessions"  className="nav-item"><BookOpen size={18} /><span>Sessions</span></Link>
             <Link to="/goals"     className="nav-item"><Target size={18} /><span>Goals</span></Link>
             <Link to="/analytics" className="nav-item"><BarChart2 size={18} /><span>Analytics</span></Link>
-            <Link to="/profile"   className="nav-item active"><User size={18} /><span>Profile</span></Link>
-            <Link to="/ai-coach"  className="nav-item"><BrainCircuit size={18} /><span>AI Coach</span></Link>
+            <Link to="/ai-coach"  className="nav-item"><BrainCircuit size={18} /><span>Coach</span></Link>
+            <Link to="/profile"   className="nav-item"><User size={18} /><span>Profile</span></Link>
           </nav>
         </div>
         <div className="sidebar-bottom">
