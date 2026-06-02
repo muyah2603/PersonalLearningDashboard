@@ -64,7 +64,7 @@ app.use('/api/chatbot',       chatbotRoutes);
 
 // FIX VAL-1 (1/2): 404 handler
 app.use((req, res) => {
-  res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Route không tồn tại' } });
+  res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Route not found' } });
 });
 
 // FIX VAL-1 (2/2): Global error middleware — PHẢI có đủ 4 tham số
@@ -86,6 +86,6 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server đang chạy tại port ${PORT}`);
-  startScheduler(); // scheduler tách riêng, gọi sau khi server sẵn sàng
+  console.log(`Server running on port ${PORT}`);
+  startScheduler();
 });

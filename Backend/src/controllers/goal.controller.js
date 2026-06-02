@@ -8,8 +8,16 @@ const { NOTIFICATION_TYPES }     = require('../models/Notification');
 
 // ── GET /api/goals ────────────────────────────────────────────────────────────
 const getGoals = asyncHandler(async (req, res) => {
-  const goals = await Goal.find({ userId: req.user._id }).sort({ startDate: -1 }).lean();
-  res.json({ data: goals });
+  const page  = Math.max(1, parseInt(req.query.page  || '1',  10));
+  const limit = Math.min(50, Math.max(1, parseInt(req.query.limit || '20', 10)));
+  const skip  = (page - 1) * limit;
+
+  const [goals, total] = await Promise.all([
+    Goal.find({ userId: req.user._id }).sort({ startDate: -1 }).skip(skip).limit(limit).lean(),
+    Goal.countDocuments({ userId: req.user._id }),
+  ]);
+
+  res.json({ data: goals, meta: { page, limit, total, pages: Math.ceil(total / limit) } });
 });
 
 // ── GET /api/goals/progress ───────────────────────────────────────────────────
