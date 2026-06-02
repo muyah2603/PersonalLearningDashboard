@@ -19,7 +19,7 @@ const ForgotPassword = () => {
       const { data } = await forgotPassword({ email });
       setSuccessMsg(data.message);
     } catch (err) {
-      setError(err.response?.data?.message || 'Có lỗi xảy ra');
+      setError(err.response?.data?.message || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }

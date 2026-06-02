@@ -20,9 +20,7 @@
   width: fit-content;
   transition: color 0.2s;
 }
-.btn-back:hover {
-  color: #0F172A;
-}
+.btn-back:hover { color: #0F172A; }
 
 .sd-header h2 {
   display: flex;
@@ -40,26 +38,30 @@
   line-height: 1.5;
 }
 
+/* Timer thu nhỏ */
 .timer-container {
   background-color: white;
-  border-radius: 36px;
-  padding: 60px 40px;
+  border-radius: 28px;
+  padding: 32px 28px;
   box-shadow: 0 4px 24px rgba(0,0,0,0.03);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 40px;
+  gap: 20px;
+  position: sticky;
+  top: 24px;
 }
 
 .timer-display {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  width: 100%;
 }
 
 .timer-display h1 {
-  font-size: 72px;
+  font-size: 48px;
   font-weight: 800;
   color: #1E293B;
   font-family: monospace;
@@ -69,17 +71,18 @@
 
 .timer-controls {
   display: flex;
-  gap: 16px;
+  gap: 12px;
+  width: 100%;
 }
 
 .timer-controls button {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 16px 32px;
+  padding: 12px 24px;
   border-radius: 999px;
   border: none;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;

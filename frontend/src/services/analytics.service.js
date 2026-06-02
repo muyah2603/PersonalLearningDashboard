@@ -17,3 +17,6 @@ export const getFocusScore = (config = {}) =>
 
 export const getGoalProgress = (config = {}) =>
   API.get('/analytics/goal-progress', config);
+
+export const getStreak = (config = {}) =>
+API.get('/analytics/streak', config);

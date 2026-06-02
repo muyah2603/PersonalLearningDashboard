@@ -198,3 +198,357 @@ button.btn-danger:hover { background: #dc2626; }
 .goal-actions button { padding: 0.4rem 0.85rem; font-size: 0.8rem; }
 
 .loading { display: flex; align-items: center; justify-content: center; min-height: 100vh; color: var(--text-muted); }
+
+/* Bottom-nav hidden by default, only shown on mobile via media query */
+.bottom-nav { display: none; }
+
+/* ── Sidebar links + Sign Out ────────────────────────────────────────────── */
+.sidebar-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sb-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  color: #64748B;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.sb-link:hover {
+  background-color: #F1F5F9;
+  color: #0F172A;
+}
+
+/* Fix: override global button style cho Sign Out trong sidebar */
+.sidebar button.sb-link {
+  background: none !important;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748B;
+  padding: 8px 12px;
+  width: 100%;
+  text-align: left;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  transform: none;
+}
+
+.sidebar button.sb-link:hover {
+  background-color: #F1F5F9 !important;
+  color: #0F172A;
+  transform: none;
+}
+
+.sidebar button.sb-link:active {
+  transform: none;
+}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE — Mobile & Tablet
+   Breakpoints: tablet ≤ 1024px, mobile ≤ 768px
+   ══════════════════════════════════════════════ */
+
+/* ════════════════════════════════════════════
+   HAMBURGER MENU & SIDEBAR OVERLAY
+   ════════════════════════════════════════════ */
+
+/* Hamburger button — hidden on desktop, shown on tablet/mobile */
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: #0F172A;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transform: none;
+  transition: background-color 0.2s;
+}
+
+.hamburger-btn:hover {
+  background-color: #F1F5F9;
+  transform: none;
+}
+
+.hamburger-btn:active {
+  transform: none;
+}
+
+/* Overlay that dims content behind open sidebar */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 49;
+}
+
+/* ── Tablet (≤ 1024px) ── */
+@media (max-width: 1024px) {
+  /* Switch sidebar to fixed drawer */
+  .sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 260px !important;
+    padding: 24px 16px;
+    z-index: 50;
+    transform: translateX(-110%);
+    transition: transform 0.28s ease;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.14);
+  }
+
+  .sidebar.sidebar-open {
+    transform: translateX(0);
+  }
+
+  .hamburger-btn {
+    display: flex;
+  }
+
+  .nav-item {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+
+  .brand-text {
+    font-size: 17px;
+  }
+
+  .dashboard-body,
+  .sessions-wrapper,
+  .goals-wrapper,
+  .analytics-wrapper,
+  .profile-wrapper,
+  .ns-wrapper,
+  .coach-body {
+    padding: 0 24px 32px;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sessions-main-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .coach-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .small-goals-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ns-wrapper {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Mobile (≤ 768px) ── */
+@media (max-width: 768px) {
+
+  /* Sidebar stays as fixed drawer (inherited from 1024px rule above) */
+
+  .dashboard-layout,
+  .coach-layout {
+    flex-direction: column;
+  }
+
+  .main-content {
+    width: 100%;
+  }
+
+  /* Bottom Navigation */
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: #fff;
+    border-top: 1px solid #E2E8F0;
+    z-index: 100;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 8px;
+  }
+
+  .bottom-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    color: #64748B;
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 12px;
+    transition: all 0.2s;
+  }
+
+  .bottom-nav a.active,
+  .bottom-nav a:hover {
+    color: #0059BB;
+    background: #ECF5FF;
+  }
+
+  /* Navbar */
+  .top-navbar {
+    padding: 0 16px;
+    height: 60px;
+    gap: 8px;
+  }
+
+  .search-bar {
+    flex: 1;
+    max-width: 180px;
+    min-width: 0;
+  }
+
+  .top-right {
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  /* Content padding */
+  .dashboard-body,
+  .sessions-wrapper,
+  .goals-wrapper,
+  .analytics-wrapper,
+  .profile-wrapper,
+  .ns-wrapper,
+  .coach-body {
+    padding: 0 16px 80px; /* 80px cho bottom nav */
+  }
+
+  /* Banner */
+  .welcome-banner {
+    padding: 24px;
+    border-radius: 20px;
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .banner-text h2 { font-size: 22px; }
+  .streak-circle  { width: 100px; height: 100px; }
+  .streak-number  { font-size: 32px; }
+
+  /* Grids → single column */
+  .dashboard-grid,
+  .sessions-main-grid,
+  .coach-grid,
+  .analytics-grid,
+  .profile-grid,
+  .bgc-chips,
+  .small-goals-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Goals */
+  .big-goal-card { padding: 24px; border-radius: 24px; }
+  .bgc-chips      { gap: 12px; }
+
+  /* Sessions header */
+  .sessions-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .filter-pills {
+    max-width: 100%;
+  }
+
+  /* Coach banner */
+  .coach-banner {
+    flex-direction: column;
+    padding: 24px;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  /* Profile hero */
+  .profile-hero {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+  }
+
+  .ph-badges {
+    justify-content: center;
+  }
+
+  /* NewSession */
+  .ns-row          { grid-template-columns: 1fr; }
+  .ns-focus-btns   { gap: 8px; }
+  .focus-btn       { padding: 10px; font-size: 14px; }
+
+  /* Modal */
+  .modal-content,
+  .modal-content.pwd-modal {
+    margin: 16px;
+    padding: 24px;
+    width: calc(100% - 32px);
+    max-width: none;
+  }
+
+  .modal-row { grid-template-columns: 1fr; }
+
+  /* Timer */
+  .timer-display h1 { font-size: 36px; }
+
+  /* Score pill Coach */
+  .score-pill { min-width: 120px; padding: 16px 20px; }
+  .score-pill .score-num { font-size: 40px; }
+}
+
+/* ── Small mobile (≤ 480px) ── */
+@media (max-width: 480px) {
+  .top-navbar { padding: 0 12px; }
+
+  .search-bar { max-width: 160px; }
+
+  .banner-text h2 { font-size: 18px; }
+
+  .sh-left h2,
+  .gh-left h2 { font-size: 24px; }
+
+  .session-card {
+    padding: 16px;
+    border-radius: 20px;
+    gap: 12px;
+  }
+
+  .duration { font-size: 16px; }
+}

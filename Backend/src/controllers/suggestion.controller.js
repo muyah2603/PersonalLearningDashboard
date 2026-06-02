@@ -1,3 +1,4 @@
+const mongoose     = require('mongoose');
 const StudySession = require('../models/StudySession');
 const Goal         = require('../models/Goal');
 const Suggestion   = require('../models/Suggestion');
@@ -78,15 +79,29 @@ const generateSuggestions = asyncHandler(async (req, res) => {
     }).lean();
 
     if (!alreadyNotified) {
-      await Notification.create({
-        userId,
-        type:    NOTIFICATION_TYPES.INACTIVITY,
-        content: 'You have not recorded any study sessions in the past 3 days. Keep up your learning habit!',
-      });
+      // DB-4: wrap Notification + Suggestion writes in a transaction
+      const session = await mongoose.startSession();
+      try {
+        await session.withTransaction(async () => {
+          await Notification.create([{
+            userId,
+            type:    NOTIFICATION_TYPES.INACTIVITY,
+            content: 'You have not recorded any study sessions in the past 3 days. Keep up your learning habit!',
+          }], { session });
+
+          if (suggestions.length > 0) {
+            const docs = suggestions.map(content => ({ userId, content }));
+            await Suggestion.insertMany(docs, { session });
+          }
+        });
+      } finally {
+        await session.endSession();
+      }
+
+      return res.json({ data: { generated: suggestions.length, suggestions } });
     }
   }
 
-  // Lưu suggestions — dùng insertMany thay vì Promise.all + create (1 round-trip)
   if (suggestions.length === 0) {
     return res.json({ data: { generated: 0, suggestions: [] } });
   }

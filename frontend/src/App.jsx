@@ -13,9 +13,9 @@ import NewSession from './pages/NewSession/index.jsx';
 import SessionDetail from './pages/SessionDetail/index.jsx';
 import Support from './pages/Support/index.jsx';
 import ForgotPassword from './pages/ForgotPassword/index.jsx';
-import AICoach from './pages/AICoach/index.jsx';
+import AICoach from './pages/Coach/index.jsx';
 
-const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '121799730028-qjh9oqtvqqn3m14q1vlgssefleehpopp.apps.googleusercontent.com';
+const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const App = () => (
   <GoogleOAuthProvider clientId={clientId}>

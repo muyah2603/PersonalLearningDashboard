@@ -5,8 +5,9 @@ const { findOwned } = require('../utils/ownership');
 // ── DTO ──────────────────────────────────────────────────────────────────────
 function toSessionDTO(doc) {
   return {
+    _id:            doc._id,        // Fix: frontend dùng session._id
     id:             doc._id,
-    subject:        doc.subjectId,   // đã populated: { _id, name }
+    subjectId:      doc.subjectId,  // Fix: frontend dùng session.subjectId (populated: { _id, name })
     startTime:      doc.startTime,
     endTime:        doc.endTime,
     focusLevel:     doc.focusLevel,
@@ -45,7 +46,6 @@ const getSessions = asyncHandler(async (req, res) => {
   // Fix API-2: trả DTO, không trả raw doc
   res.json({
     data: sessions.map(toSessionDTO),
-    meta: { page: pageNum, limit: limitNum, total, totalPages: Math.ceil(total / limitNum) },
   });
 });
 

@@ -76,7 +76,7 @@ const getBySubject = asyncHandler(async (req, res) => {
         as:           'subject',
       },
     },
-    { $unwind: { path: '$subject', preserveNullAndEmpty: true } },
+    { $unwind: { path: '$subject', preserveNullAndEmptyArrays: true } },
     { $sort: { totalSeconds: -1 } },
   ]);
 
@@ -190,4 +190,33 @@ const getGoalProgress = asyncHandler(async (req, res) => {
   res.json({ data });
 });
 
-module.exports = { getSummary, getBySubject, getHeatmap, getFocusScore, getGoalProgress };
+// ── GET /api/analytics/streak ─────────────────────────────────────────────────
+// Fix PERF-2: tính streak server-side thay vì 365-loop + full history ở client
+const getStreak = asyncHandler(async (req, res) => {
+  const days = await StudySession.aggregate([
+    { $match: { userId: req.user._id } },
+    {
+      $group: {
+        _id: { $dateToString: { format: '%Y-%m-%d', date: '$startTime' } },
+      },
+    },
+    { $sort: { _id: -1 } },
+  ]);
+
+  const dateSet = new Set(days.map((d) => d._id));
+  let streak = 0;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    if (dateSet.has(key)) streak++;
+    else if (i > 0) break;
+  }
+
+  res.json({ data: { streak } });
+});
+
+module.exports = { getSummary, getBySubject, getHeatmap, getFocusScore, getGoalProgress, getStreak };
