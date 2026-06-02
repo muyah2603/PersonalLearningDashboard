@@ -64,6 +64,10 @@ export const forgotPassword = (
     config
   );
 
+// ── Logout ───────────────────────────────────────────────
+export const logoutUser = (config = {}) =>
+  API.post('/auth/logout', {}, config);
+
 // ── Upload Avatar ────────────────────────────────────────
 export const uploadAvatar = (
   formData,

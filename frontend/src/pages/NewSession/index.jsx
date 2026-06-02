@@ -1,14 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { 
-  Landmark, LayoutDashboard, BookOpen, Target, BarChart2, User,
-  Search, Plus, Save, LifeBuoy, LogOut, BookMarked, BrainCircuit
-} from 'lucide-react';
-import UserAvatar       from '../../components/UserAvatar';
-import BtnNewSession    from '../../components/BtnNewSession';
-import NotificationBell from '../../components/NotificationBell';
-import ChatBot          from '../../components/ChatBot';
-import { useAuth }      from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Save, BookMarked } from 'lucide-react';
+import AppLayout        from '../../components/AppLayout';
 import { getSubjects, createSubject } from '../../services/subject.service';
 import { createSession }              from '../../services/session.service';
 import './NewSession.css';
@@ -22,8 +15,7 @@ const focusLabels = {
 };
 
 const NewSession = () => {
-  const navigate     = useNavigate();
-  const { logout }   = useAuth();
+  const navigate = useNavigate();
 
   const [subjects,        setSubjects]        = useState([]);
   const [toast,           setToast]           = useState({ show: false, message: '', type: 'success' });
@@ -83,7 +75,7 @@ const NewSession = () => {
         ...(newSubjectForm.targetHours  && { targetHours:  Number(newSubjectForm.targetHours) }),
       };
       const res  = await createSubject(payload);
-      const data = res.data ?? res; // interceptor unwrap
+      const data = res.data ?? res;
       setSubjects(prev => [...prev, data]);
       setForm(prev => ({ ...prev, subjectId: data._id }));
       setNewSubjectForm({ name: '', description: '', targetHours: '' });
@@ -126,214 +118,165 @@ const NewSession = () => {
   };
 
   return (
-    <div className="dashboard-layout">
+    <AppLayout>
       {toast.show && (
         <div className={`ns-toast ns-toast-${toast.type}`}>{toast.message}</div>
       )}
 
-      {/* SIDEBAR */}
-      <aside className="sidebar">
-        <div className="sidebar-top">
-          <div className="brand-logo">
-            <div className="logo-icon"><Landmark size={20} color="white" /></div>
-            <span className="brand-text">Learning</span>
-          </div>
-          <nav className="nav-menu">
-            <Link to="/dashboard" className="nav-item"><LayoutDashboard size={18} /><span>Dashboard</span></Link>
-            <Link to="/sessions"  className="nav-item active"><BookOpen size={18} /><span>Sessions</span></Link>
-            <Link to="/goals"     className="nav-item"><Target size={18} /><span>Goals</span></Link>
-            <Link to="/analytics" className="nav-item"><BarChart2 size={18} /><span>Analytics</span></Link>
-            <Link to="/ai-coach"  className="nav-item"><BrainCircuit size={18} /><span>Coach</span></Link>
-            <Link to="/profile"   className="nav-item"><User size={18} /><span>Profile</span></Link>
-          </nav>
+      <div className="ns-header" style={{ padding: '0 40px 24px 40px' }}>
+        <div>
+          <h2>Study Sessions <span className="ns-breadcrumb">&gt; NEW SESSION</span></h2>
+          <p>Your chronological map of cognitive growth and mastery. Add a new subject first, then set your study time and start learning effectively.</p>
+          {errorMsg && (
+            <p style={{ color: '#DC2626', marginTop: '10px', fontSize: '14px', fontWeight: '500' }}>
+              {errorMsg}
+            </p>
+          )}
         </div>
-        <div className="sidebar-bottom">
-          <BtnNewSession />
-          <div className="sidebar-links">
-            <Link to="/support" className="sb-link"><LifeBuoy size={16}/> Support</Link>
-            <button className="sb-link" onClick={() => { logout(); navigate('/login'); }}>
-              <LogOut size={16}/> Sign Out
+      </div>
+
+      <div className="ns-wrapper">
+        {/* RIGHT — Add New Subject (now first = left on desktop, top on mobile) */}
+        <div className="ns-right">
+          <div className="ns-add-subject-card">
+            <div className="ns-add-subject-header">
+              <BookMarked size={18} />
+              <h3>Add New Subject</h3>
+            </div>
+
+            <div className="ns-field">
+              <label>Subject Name <span className="ns-required">*</span></label>
+              <input
+                type="text" name="name"
+                placeholder="Ex: Data Structures"
+                value={newSubjectForm.name}
+                onChange={handleNewSubjectChange}
+              />
+            </div>
+
+            <div className="ns-field">
+              <label>Description</label>
+              <textarea
+                name="description"
+                placeholder="Short description..."
+                value={newSubjectForm.description}
+                onChange={handleNewSubjectChange}
+                rows={3}
+              />
+            </div>
+
+            <div className="ns-field">
+              <label>Target Hours</label>
+              <input
+                type="text" inputMode="numeric" name="targetHours"
+                placeholder="Ex: 50"
+                value={newSubjectForm.targetHours}
+                onChange={handleNewSubjectChange}
+              />
+            </div>
+
+            <button
+              type="button" className="btn-add-subject"
+              onClick={handleCreateSubject}
+              disabled={subjectLoading}
+            >
+              <Plus size={16} />
+              {subjectLoading ? 'Adding...' : 'Add Subject'}
             </button>
           </div>
         </div>
-      </aside>
 
-      {/* MAIN */}
-      <main className="main-content">
-        <header className="top-navbar">
-          <div className="search-bar">
-            <Search size={16} color="#94A3B8" />
-            <input
-              type="text"
-              placeholder="Search sessions..."
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && e.target.value.trim())
-                  navigate(`/sessions?q=${encodeURIComponent(e.target.value.trim())}`);
-              }}
-            />
-          </div>
-          <div className="top-right">
-            <NotificationBell />
-            <UserAvatar />
-          </div>
-        </header>
+        {/* LEFT — Session form (now second = right on desktop, bottom on mobile) */}
+        <div className="ns-left">
+          <div className="ns-form-card">
 
-        <div className="ns-header" style={{ padding: '0 40px 24px 40px' }}>
-          <div>
-            <h2>Study Sessions <span className="ns-breadcrumb">&gt; NEW SESSION</span></h2>
-            <p>Your chronological map of cognitive growth and mastery. Add a new subject first, then set your study time and start learning effectively.</p>
-            {errorMsg && (
-              <p style={{ color: '#DC2626', marginTop: '10px', fontSize: '14px', fontWeight: '500' }}>
-                {errorMsg}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="ns-wrapper">
-          {/* LEFT */}
-          <div className="ns-left">
-            <div className="ns-form-card">
-
-              {/* Row 1 */}
-              <div className="ns-row">
-                <div className="ns-field">
-                  <label>Subject</label>
-                  <div className="ns-select-wrapper">
-                    <select name="subjectId" value={form.subjectId} onChange={handleChange}>
-                      {subjects.length === 0 ? (
-                        <option value="">No subject available</option>
-                      ) : (
-                        subjects.map(sub => (
-                          <option key={sub._id} value={sub._id}>{sub.name}</option>
-                        ))
-                      )}
-                    </select>
-                    <div className="color-dot dot-navy" />
-                  </div>
-                </div>
-                <div className="ns-field">
-                  <label>Session Date</label>
-                  <input type="date" name="sessionDate" value={form.sessionDate} onChange={handleChange} />
+            {/* Row 1 */}
+            <div className="ns-row">
+              <div className="ns-field">
+                <label>Subject</label>
+                <div className="ns-select-wrapper">
+                  <select name="subjectId" value={form.subjectId} onChange={handleChange}>
+                    {subjects.length === 0 ? (
+                      <option value="">No subject available</option>
+                    ) : (
+                      subjects.map(sub => (
+                        <option key={sub._id} value={sub._id}>{sub.name}</option>
+                      ))
+                    )}
+                  </select>
+                  <div className="color-dot dot-navy" />
                 </div>
               </div>
-
-              {/* Row 2 */}
-              <div className="ns-row">
-                <div className="ns-field">
-                  <label>Start Time</label>
-                  <input type="datetime-local" name="startTime" value={form.startTime} onChange={handleChange} />
-                </div>
-                <div className="ns-field">
-                  <label>End Time (Projected)</label>
-                  <input type="datetime-local" name="endTime" value={form.endTime} onChange={handleChange} />
-                </div>
-              </div>
-
-              {/* Focus Level */}
-              <div className="ns-focus-section">
-                <div className="ns-focus-header">
-                  <label>Cognitive Load / Focus Intensity</label>
-                  <span className="ns-focus-label">{focusLabels[form.focusLevel]}</span>
-                </div>
-                <div className="ns-focus-btns">
-                  {[1,2,3,4,5].map(n => (
-                    <button
-                      key={n} type="button"
-                      className={`focus-btn ${form.focusLevel === n ? 'active' : ''}`}
-                      onClick={() => handleFocus(n)}
-                    >{n}</button>
-                  ))}
-                </div>
-                <div className="ns-focus-range">
-                  <span>PASSIVE REVIEW</span>
-                  <span>DEEP SYNTHESIS</span>
-                </div>
-              </div>
-
-              {/* Notes */}
-              <div className="ns-notes-section">
-                <label>Session Goals & Research Hypothesis</label>
-                <textarea
-                  name="notes"
-                  placeholder="Outline the specific questions you intend to answer..."
-                  value={form.notes}
-                  onChange={handleChange}
-                  rows={5}
-                />
-              </div>
-
-              {/* Actions */}
-              <div className="ns-actions">
-                <button type="button" className="btn-cancel" onClick={() => navigate('/sessions')}>Cancel</button>
-                <button type="button" className="btn-save-session" onClick={handleSaveSession} disabled={loading}>
-                  <Save size={16} />
-                  {loading ? 'Saving...' : 'Save Session'}
-                </button>
+              <div className="ns-field">
+                <label>Session Date</label>
+                <input type="date" name="sessionDate" value={form.sessionDate} onChange={handleChange} />
               </div>
             </div>
 
-            <div className="ns-archive-row">
-              <button className="btn-view-archive" onClick={() => navigate('/sessions')}>
-                View Session Archive →
+            {/* Row 2 */}
+            <div className="ns-row">
+              <div className="ns-field">
+                <label>Start Time</label>
+                <input type="datetime-local" name="startTime" value={form.startTime} onChange={handleChange} />
+              </div>
+              <div className="ns-field">
+                <label>End Time (Projected)</label>
+                <input type="datetime-local" name="endTime" value={form.endTime} onChange={handleChange} />
+              </div>
+            </div>
+
+            {/* Focus Level */}
+            <div className="ns-focus-section">
+              <div className="ns-focus-header">
+                <label>Cognitive Load / Focus Intensity</label>
+                <span className="ns-focus-label">{focusLabels[form.focusLevel]}</span>
+              </div>
+              <div className="ns-focus-btns">
+                {[1,2,3,4,5].map(n => (
+                  <button
+                    key={n} type="button"
+                    className={`focus-btn ${form.focusLevel === n ? 'active' : ''}`}
+                    onClick={() => handleFocus(n)}
+                  >{n}</button>
+                ))}
+              </div>
+              <div className="ns-focus-range">
+                <span>PASSIVE REVIEW</span>
+                <span>DEEP SYNTHESIS</span>
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div className="ns-notes-section">
+              <label>Session Goals & Research Hypothesis</label>
+              <textarea
+                name="notes"
+                placeholder="Outline the specific questions you intend to answer..."
+                value={form.notes}
+                onChange={handleChange}
+                rows={5}
+              />
+            </div>
+
+            {/* Actions */}
+            <div className="ns-actions">
+              <button type="button" className="btn-cancel" onClick={() => navigate('/sessions')}>Cancel</button>
+              <button type="button" className="btn-save-session" onClick={handleSaveSession} disabled={loading}>
+                <Save size={16} />
+                {loading ? 'Saving...' : 'Save Session'}
               </button>
             </div>
           </div>
 
-          {/* RIGHT */}
-          <div className="ns-right">
-            <div className="ns-add-subject-card">
-              <div className="ns-add-subject-header">
-                <BookMarked size={18} />
-                <h3>Add New Subject</h3>
-              </div>
-
-              <div className="ns-field">
-                <label>Subject Name <span className="ns-required">*</span></label>
-                <input
-                  type="text" name="name"
-                  placeholder="Ex: Data Structures"
-                  value={newSubjectForm.name}
-                  onChange={handleNewSubjectChange}
-                />
-              </div>
-
-              <div className="ns-field">
-                <label>Description</label>
-                <textarea
-                  name="description"
-                  placeholder="Short description..."
-                  value={newSubjectForm.description}
-                  onChange={handleNewSubjectChange}
-                  rows={3}
-                />
-              </div>
-
-              <div className="ns-field">
-                <label>Target Hours</label>
-                <input
-                  type="text" inputMode="numeric" name="targetHours"
-                  placeholder="Ex: 50"
-                  value={newSubjectForm.targetHours}
-                  onChange={handleNewSubjectChange}
-                />
-              </div>
-
-              <button
-                type="button" className="btn-add-subject"
-                onClick={handleCreateSubject}
-                disabled={subjectLoading}
-              >
-                <Plus size={16} />
-                {subjectLoading ? 'Adding...' : 'Add Subject'}
-              </button>
-            </div>
+          <div className="ns-archive-row">
+            <button className="btn-view-archive" onClick={() => navigate('/sessions')}>
+              View Session Archive →
+            </button>
           </div>
         </div>
-      </main>
 
-      <ChatBot />
-    </div>
+      </div>
+    </AppLayout>
   );
 };
 

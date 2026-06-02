@@ -28,7 +28,7 @@ const Login = () => {
       );
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.error?.message || 'Đăng nhập thất bại');
+      setError(err.response?.data?.error?.message || 'Login failed. Please try again.');
     }
   };
 
@@ -42,7 +42,7 @@ const Login = () => {
       );
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.error?.message || 'Đăng nhập Google thất bại');
+      setError(err.response?.data?.error?.message || 'Google login failed. Please try again.');
     }
   };
 

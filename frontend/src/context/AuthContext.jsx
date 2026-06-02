@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { getProfile } from '../services/auth.service';
+import { getProfile, logoutUser } from '../services/auth.service';
 
 const AuthContext = createContext(null);
 
@@ -22,8 +22,9 @@ export const AuthProvider = ({ children }) => {
     setUser(userData);
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
+  const logout = async () => {
+    try { await logoutUser(); } catch {}
+    localStorage.removeItem('token'); // clear fallback token too
     setUser(null);
   };
 

@@ -7,9 +7,20 @@ const { OAuth2Client }  = require('google-auth-library');
 const { sendMail }      = require('../config/email.service');
 const asyncHandler      = require('../utils/asyncHandler');
 
-// ── Helper DTO ────────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 function toUserDTO(user) {
   return { id: user._id, name: user.name, email: user.email, avatar: user.avatar };
+}
+
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure:   process.env.NODE_ENV === 'production',
+  sameSite: 'lax',
+  maxAge:   7 * 24 * 60 * 60 * 1000, // 7 days
+};
+
+function setTokenCookie(res, token) {
+  res.cookie('token', token, COOKIE_OPTIONS);
 }
 
 // ── POST /api/auth/register ───────────────────────────────────────────────────
@@ -29,9 +40,11 @@ const register = asyncHandler(async (req, res) => {
   if (exists)
     return res.status(409).json({ error: { code: 'EMAIL_TAKEN', message: 'Email is already in use' } });
 
-  const user = await User.create({ name, email: email.toLowerCase(), password });
+  const user  = await User.create({ name, email: email.toLowerCase(), password });
+  const token = generateToken(user._id);
+  setTokenCookie(res, token);
 
-  res.status(201).json({ data: { ...toUserDTO(user), token: generateToken(user._id) } });
+  res.status(201).json({ data: { ...toUserDTO(user), token } });
 });
 
 // ── POST /api/auth/login ──────────────────────────────────────────────────────
@@ -46,7 +59,10 @@ const login = asyncHandler(async (req, res) => {
   if (!user || !(await user.matchPassword(password)))
     return res.status(401).json({ error: { code: 'INVALID_CREDENTIALS', message: 'Invalid email or password' } });
 
-  res.json({ data: { ...toUserDTO(user), token: generateToken(user._id) } });
+  const token = generateToken(user._id);
+  setTokenCookie(res, token);
+
+  res.json({ data: { ...toUserDTO(user), token } });
 });
 
 // ── POST /api/auth/google ─────────────────────────────────────────────────────
@@ -83,7 +99,10 @@ const googleLogin = asyncHandler(async (req, res) => {
     await user.save();
   }
 
-  res.json({ data: { ...toUserDTO(user), token: generateToken(user._id) } });
+  const token = generateToken(user._id);
+  setTokenCookie(res, token);
+
+  res.json({ data: { ...toUserDTO(user), token } });
 });
 
 // ── GET /api/auth/google/callback ─────────────────────────────────────────────
@@ -225,6 +244,12 @@ const resetPassword = asyncHandler(async (req, res) => {
   res.json({ data: { message: 'Password reset successfully. Please log in.' } });
 });
 
+// ── POST /api/auth/logout ─────────────────────────────────────────────────────
+const logout = (req, res) => {
+  res.clearCookie('token', { ...COOKIE_OPTIONS, maxAge: 0 });
+  res.json({ data: { message: 'Logged out successfully' } });
+};
+
 // ── module.exports ────────────────────────────────────────────────────────────
 module.exports = {
   register,
@@ -236,4 +261,5 @@ module.exports = {
   updateAvatar,
   forgotPassword,
   resetPassword,
+  logout,
 };

@@ -1,8 +1,9 @@
 require('dotenv').config();
-const express = require('express');
-const cors    = require('cors');
-const session = require('express-session');
-const passport = require('./src/config/passport');
+const express      = require('express');
+const cors         = require('cors');
+const cookieParser = require('cookie-parser');
+const session      = require('express-session');
+const passport     = require('./src/config/passport');
 const connectDB = require('./src/config/db');
 
 // Routes
@@ -23,12 +24,23 @@ connectDB();
 
 const app = express();
 
-// FIX PERF-3: chỉ cho phép CLIENT_URL thay vì reflect mọi origin
+// Allow CLIENT_URL + common Vite dev ports
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CLIENT_URL,
+  origin: (origin, cb) => {
+    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    cb(new Error(`CORS: origin ${origin} not allowed`));
+  },
   credentials: true,
 }));
 
+app.use(cookieParser());
 app.use(express.json());
 app.use('/public', express.static('public'));
 app.use(session({

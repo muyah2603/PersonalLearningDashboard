@@ -509,3 +509,84 @@
 body:has(.dashboard-layout) {
   background-color: #F8FAFC;
 }
+
+/* ═══════════════════════════════════════
+   RESPONSIVE — must be at end of file
+   so they override base rules above
+   ═══════════════════════════════════════ */
+
+/* Sidebar: switch to fixed drawer on tablet/mobile */
+@media (max-width: 1024px) {
+  .sidebar {
+    position: fixed !important;
+    top: 0; left: 0;
+    height: 100vh !important;
+    width: 260px !important;
+    z-index: 50;
+    transform: translateX(-110%);
+    transition: transform 0.28s ease;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.14);
+  }
+  .sidebar.sidebar-open { transform: translateX(0); }
+
+  .dashboard-body { padding: 0 24px 32px; }
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .top-navbar     { padding: 0 24px; }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed !important;
+    transform: translateX(-110%);
+  }
+  .sidebar.sidebar-open { transform: translateX(0); }
+
+  .dashboard-layout { flex-direction: column; }
+  .main-content     { width: 100%; }
+
+  .dashboard-body { padding: 0 16px 80px; }
+  .top-navbar     { height: 60px; padding: 0 16px; }
+  .search-bar     { max-width: 160px; }
+
+  .welcome-banner {
+    padding: 20px 22px;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    border-radius: 22px;
+  }
+  .banner-text       { flex: 1; min-width: 0; }
+  .banner-text h2    { font-size: 18px; margin-bottom: 6px; }
+  .banner-text p     { font-size: 12px; }
+  .streak-circle     { width: 84px; height: 84px; flex-shrink: 0; padding: 10px; }
+  .streak-number     { font-size: 22px; margin: 1px 0; }
+  .streak-label      { font-size: 8px; letter-spacing: 0.2px; }
+  .streak-sub        { font-size: 8px; }
+
+  .dashboard-grid  { grid-template-columns: 1fr; }
+  .panel-right     { gap: 16px; }
+  .white-card      { padding: 20px; border-radius: 20px; }
+  .dark-card       { padding: 20px; border-radius: 20px; }
+  .chart-area      { padding: 0; }
+
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: #fff;
+    border-top: 1px solid #E2E8F0;
+    z-index: 100;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 8px;
+  }
+  .bottom-nav a {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 3px; color: #64748B; text-decoration: none;
+    font-size: 10px; font-weight: 600; padding: 6px 10px; border-radius: 12px;
+    transition: all 0.2s;
+  }
+  .bottom-nav a.active,
+  .bottom-nav a:hover { color: #0059BB; background: #ECF5FF; }
+}

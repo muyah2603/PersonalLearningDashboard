@@ -6,7 +6,7 @@ const passport = require('passport');
 const {
   register, login, googleLogin, googleCallback,
   getProfile, changePassword, updateAvatar,
-  forgotPassword, resetPassword,
+  forgotPassword, resetPassword, logout,
 } = require('../controllers/auth.controller');
 
 const { protect } = require('../middleware/auth.middleware');
@@ -21,6 +21,7 @@ router.post('/google/login',    googleLogin);
 router.get('/profile',          protect, getProfile);
 router.put('/change-password',  protect, changePassword);
 router.post('/upload-avatar',   protect, upload.single('avatar'), updateAvatar);
+router.post('/logout',          logout);
 
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 router.get('/google/callback',

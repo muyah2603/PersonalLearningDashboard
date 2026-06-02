@@ -23,7 +23,7 @@ const Register = () => {
       await register(form);
       navigate('/login');
     } catch (err) {
-      setError(err.response?.data?.message || 'Đăng ký thất bại');
+      setError(err.response?.data?.message || 'Registration failed. Please try again.');
     }
   };
 
@@ -33,7 +33,7 @@ const Register = () => {
       loginUser({ _id: data._id, name: data.name, email: data.email }, data.token);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Đăng ký Google thất bại');
+      setError(err.response?.data?.message || 'Google registration failed. Please try again.');
     }
   };
 

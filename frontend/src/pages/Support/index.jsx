@@ -1,16 +1,8 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { 
-  Library, Landmark, LayoutDashboard, BookOpen, Target, BarChart2, User, Search,
-  LifeBuoy, LogOut, AlertTriangle, Clock, Zap, BookMarked, CheckCircle, Shield
-} from 'lucide-react';
-import BtnNewSession from '../../components/BtnNewSession';
-import UserAvatar from '../../components/UserAvatar';
-import NotificationBell from '../../components/NotificationBell';
+import { LifeBuoy, AlertTriangle, Clock, Target, Zap, BookMarked, CheckCircle, Shield } from 'lucide-react';
+import AppLayout from '../../components/AppLayout';
 import './Support.css';
-import { BrainCircuit } from 'lucide-react';
 
 const Support = () => {
-  const navigate = useNavigate();
   const rules = [
     {
       icon: <AlertTriangle size={20} />,
@@ -24,7 +16,7 @@ const Support = () => {
       iconBg: '#D1FAE5',
       iconColor: '#059669',
       title: 'Auto-Complete Sessions',
-      description: 'When your study timer reaches the target duration (based on your session\'s start and end time), the session will automatically mark itself as "Completed". You cannot manually end a session early — this encourages discipline.',
+      description: "When your study timer reaches the target duration (based on your session's start and end time), the session will automatically mark itself as \"Completed\". You cannot manually end a session early — this encourages discipline.",
     },
     {
       icon: <Target size={20} />,
@@ -64,71 +56,31 @@ const Support = () => {
   ];
 
   return (
-    <div className="dashboard-layout">
-      {/* SIDEBAR */}
-      <aside className="sidebar">
-        <div className="sidebar-top">
-          <div className="brand-logo">
-            <div className="logo-icon"><Landmark size={20} color="white" /></div>
-            <span className="brand-text">Learning</span>
+    <AppLayout showChatBot={false}>
+      <div className="support-wrapper">
+        <div className="support-header">
+          <div className="support-icon-big">
+            <LifeBuoy size={28} color="#0059BB" />
           </div>
-          <nav className="nav-menu">
-            <Link to="/dashboard" className="nav-item"><LayoutDashboard size={18} /><span>Dashboard</span></Link>
-            <Link to="/sessions" className="nav-item"><BookOpen size={18} /><span>Sessions</span></Link>
-            <Link to="/goals" className="nav-item"><Target size={18} /><span>Goals</span></Link>
-            <Link to="/analytics" className="nav-item"><BarChart2 size={18} /><span>Analytics</span></Link>
-
-            <Link to="/ai-coach" className="nav-item"><BrainCircuit size={18} /><span>Coach</span></Link>
-            <Link to="/profile"   className="nav-item"><User size={18} /><span>Profile</span></Link>
-          </nav>
+          <h2>Rules & Guidelines</h2>
+          <p>Understanding how the Learning Tracker works will help you get the most out of your study sessions.</p>
         </div>
-        <div className="sidebar-bottom">
-          <BtnNewSession />
-          <div className="sidebar-links">
-            <Link to="/support" className="sb-link active"><LifeBuoy size={16}/> Support</Link>
-            <Link to="/login" className="sb-link"><LogOut size={16}/> Sign Out</Link>
-          </div>
-        </div>
-      </aside>
 
-      {/* MAIN CONTENT */}
-      <main className="main-content">
-        <header className="top-navbar">
-          <div className="search-bar">
-            <Search size={16} color="#94A3B8" />
-            <input type="text" placeholder="Search sessions..." onKeyDown={(e) => { if (e.key === 'Enter' && e.target.value.trim()) navigate(`/sessions?q=${encodeURIComponent(e.target.value.trim())}`); }} />
-          </div>
-          <div className="top-right">
-            <NotificationBell />
-            <UserAvatar />
-          </div>
-        </header>
-
-        <div className="support-wrapper">
-          <div className="support-header">
-            <div className="support-icon-big">
-              <LifeBuoy size={28} color="#0059BB" />
-            </div>
-            <h2>Rules & Guidelines</h2>
-            <p>Understanding how the Learning Tracker works will help you get the most out of your study sessions.</p>
-          </div>
-
-          <div className="rules-grid">
-            {rules.map((rule, i) => (
-              <div key={i} className="rule-card">
-                <div className="rule-icon" style={{ backgroundColor: rule.iconBg, color: rule.iconColor }}>
-                  {rule.icon}
-                </div>
-                <div className="rule-content">
-                  <h4>{rule.title}</h4>
-                  <p>{rule.description}</p>
-                </div>
+        <div className="rules-grid">
+          {rules.map((rule, i) => (
+            <div key={i} className="rule-card">
+              <div className="rule-icon" style={{ backgroundColor: rule.iconBg, color: rule.iconColor }}>
+                {rule.icon}
               </div>
-            ))}
-          </div>
+              <div className="rule-content">
+                <h4>{rule.title}</h4>
+                <p>{rule.description}</p>
+              </div>
+            </div>
+          ))}
         </div>
-      </main>
-    </div>
+      </div>
+    </AppLayout>
   );
 };
 
