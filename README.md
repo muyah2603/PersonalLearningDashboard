@@ -73,7 +73,7 @@ sequenceDiagram
     end
 ```
 ## Architecture — Sequence Diagram - ver Shorter
-```
+```mermaid
 sequenceDiagram
     actor Client
     participant FE as Frontend
