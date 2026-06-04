@@ -385,42 +385,6 @@ button.btn-danger:hover { background: #dc2626; }
     width: 100%;
   }
 
-  /* Bottom Navigation */
-  .bottom-nav {
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    background: #fff;
-    border-top: 1px solid #E2E8F0;
-    z-index: 100;
-    justify-content: space-around;
-    align-items: center;
-    padding: 0 8px;
-  }
-
-  .bottom-nav a {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    color: #64748B;
-    text-decoration: none;
-    font-size: 10px;
-    font-weight: 600;
-    padding: 6px 10px;
-    border-radius: 12px;
-    transition: all 0.2s;
-  }
-
-  .bottom-nav a.active,
-  .bottom-nav a:hover {
-    color: #0059BB;
-    background: #ECF5FF;
-  }
-
   /* Navbar */
   .top-navbar {
     padding: 0 16px;
@@ -447,7 +411,7 @@ button.btn-danger:hover { background: #dc2626; }
   .profile-wrapper,
   .ns-wrapper,
   .coach-body {
-    padding: 0 16px 80px; /* 80px cho bottom nav */
+    padding: 0 16px 24px;
   }
 
   /* Banner */
