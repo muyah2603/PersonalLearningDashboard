@@ -105,29 +105,6 @@ const AppLayout = ({ children, showChatBot = true, searchBarSlot }) => {
       </main>
 
       {showChatBot && <ChatBot />}
-
-      <nav className="bottom-nav">
-        <Link to="/dashboard" className={location.pathname === '/dashboard' ? 'active' : ''}>
-          <LayoutDashboard size={20} />
-          <span>Home</span>
-        </Link>
-        <Link to="/sessions" className={location.pathname.startsWith('/sessions') ? 'active' : ''}>
-          <BookOpen size={20} />
-          <span>Sessions</span>
-        </Link>
-        <Link to="/goals" className={location.pathname === '/goals' ? 'active' : ''}>
-          <Target size={20} />
-          <span>Goals</span>
-        </Link>
-        <Link to="/analytics" className={location.pathname === '/analytics' ? 'active' : ''}>
-          <BarChart2 size={20} />
-          <span>Analytics</span>
-        </Link>
-        <Link to="/profile" className={location.pathname === '/profile' ? 'active' : ''}>
-          <User size={20} />
-          <span>Profile</span>
-        </Link>
-      </nav>
     </div>
   );
 };

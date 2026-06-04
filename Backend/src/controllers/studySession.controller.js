@@ -1,6 +1,8 @@
 const StudySession = require('../models/StudySession');
 const asyncHandler = require('../utils/asyncHandler');
 const { findOwned } = require('../utils/ownership');
+const { createNotification } = require('./notification.controller');
+const { NOTIFICATION_TYPES } = require('../models/Notification');
 
 // ── DTO ──────────────────────────────────────────────────────────────────────
 function toSessionDTO(doc) {
@@ -82,6 +84,14 @@ const createSession = asyncHandler(async (req, res) => {
   });
 
   await session.populate('subjectId', 'name');
+
+  // Milestone notification on session count
+  const count = await StudySession.countDocuments({ userId: req.user._id });
+  const milestones = [5, 10, 25, 50, 100, 200];
+  if (milestones.includes(count)) {
+    createNotification(req.user._id, `🏆 Milestone: You've completed ${count} study sessions!`).catch(() => {});
+  }
+
   res.status(201).json({ data: toSessionDTO(session) });
 });
 
@@ -95,6 +105,8 @@ const updateSession = asyncHandler(async (req, res) => {
   if (focusLevel !== undefined && (!Number.isInteger(focusLevel) || focusLevel < 1 || focusLevel > 5))
     return res.status(400).json({ error: { code: 'INVALID_FOCUS_LEVEL', message: 'focusLevel phải là số nguyên từ 1 đến 5' } });
 
+  const justEnded = isEnded === true && !session.isEnded;
+
   if (subjectId !== undefined)      session.subjectId      = subjectId;
   if (startTime !== undefined)      session.startTime      = startTime;
   if (endTime !== undefined)        session.endTime        = endTime;
@@ -105,6 +117,18 @@ const updateSession = asyncHandler(async (req, res) => {
 
   const updated = await session.save();
   await updated.populate('subjectId', 'name');
+
+  // Completion notification when session is ended
+  if (justEnded) {
+    const subject     = updated.subjectId?.name || 'a subject';
+    const durationMin = Math.round((updated.actualDuration || 0) / 60);
+    const dateStr     = new Date(updated.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    createNotification(
+      req.user._id,
+      `✅ Session complete! You studied "${subject}" for ${durationMin} min on ${dateStr}.`
+    ).catch(() => {});
+  }
+
   res.json({ data: toSessionDTO(updated) });
 });
 

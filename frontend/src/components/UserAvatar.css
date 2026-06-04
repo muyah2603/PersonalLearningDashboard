@@ -6,9 +6,16 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: 6px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
+  transition: all 0.2s ease;
+}
+
+.ua-trigger:hover {
+  background: #F1F5F9;
+  transform: translateY(-1px);
 }
 
 .ua-circle {
@@ -23,11 +30,7 @@
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.5px;
-  transition: box-shadow 0.2s;
-  overflow: hidden;        /* ← chặn ảnh tràn ra ngoài vòng tròn */
-}
-.ua-trigger:hover .ua-circle {
-  box-shadow: 0 0 0 3px rgba(0, 89, 187, 0.2);
+  overflow: hidden;
 }
 
 .ua-dropdown {

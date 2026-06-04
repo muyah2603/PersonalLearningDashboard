@@ -421,6 +421,19 @@
   transform: scale(0.93);
 }
 
+/* Confirm modal overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: 16px;
+}
+
 /* Confirm modal */
 .session-confirm-modal {
   background: #fff;
@@ -440,25 +453,11 @@
 }
 
 @media (max-width: 768px) {
-  .sessions-wrapper   { padding: 0 16px 80px; }
+  .sessions-wrapper   { padding: 0 16px 24px; }
   .sessions-main-grid { grid-template-columns: 1fr; }
   .sessions-header    { flex-direction: column; align-items: flex-start; gap: 16px; }
   .filter-pills       { max-width: 100%; flex-wrap: wrap; }
   .session-card       { padding: 16px; border-radius: 20px; gap: 12px; }
   .duration           { font-size: 16px; }
 
-  .bottom-nav {
-    display: flex; position: fixed;
-    bottom: 0; left: 0; right: 0;
-    height: 60px; background: #fff;
-    border-top: 1px solid #E2E8F0; z-index: 100;
-    justify-content: space-around; align-items: center; padding: 0 8px;
-  }
-  .bottom-nav a {
-    display: flex; flex-direction: column; align-items: center;
-    gap: 3px; color: #64748B; text-decoration: none;
-    font-size: 10px; font-weight: 600; padding: 6px 10px; border-radius: 12px;
-  }
-  .bottom-nav a.active,
-  .bottom-nav a:hover { color: #0059BB; background: #ECF5FF; }
 }
