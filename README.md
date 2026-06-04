@@ -4,6 +4,77 @@ A full-stack web application for tracking personal study sessions, managing lear
 
 ---
 
+## Architecture — Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    actor Client
+    participant FE as Frontend<br/>(React)
+    participant BE as Backend API<br/>(Express)
+    participant DB as MongoDB Atlas
+    participant AI as Groq AI
+    participant SMTP as Email (SMTP)
+
+    %% ── 1. Authentication ──────────────────────────────────────
+    Client->>FE: Enter credentials
+    FE->>BE: POST /api/auth/login
+    BE->>DB: Find user & verify password
+    DB-->>BE: User document
+    BE-->>FE: JWT token (httpOnly cookie)
+    FE-->>Client: Redirect → Dashboard
+
+    %% ── 2. Dashboard load ──────────────────────────────────────
+    Client->>FE: Open Dashboard
+    par Parallel requests
+        FE->>BE: GET /api/analytics/summary
+    and
+        FE->>BE: GET /api/notifications
+    and
+        FE->>BE: GET /api/goals/progress
+    and
+        FE->>BE: GET /api/suggestions
+    end
+    BE->>DB: Query sessions, goals, notifications
+    DB-->>BE: Aggregated data
+    BE-->>FE: Dashboard payload
+    FE-->>Client: Render Dashboard
+
+    %% ── 3. Create & end session ────────────────────────────────
+    Client->>FE: Start new session
+    FE->>BE: POST /api/sessions
+    BE->>DB: Save session document
+    BE->>DB: Count total user sessions
+    alt Session count hits milestone (5 / 10 / 25 / 50 / 100)
+        BE->>DB: Create milestone notification
+    end
+    BE-->>FE: Session created
+    Client->>FE: End session
+    FE->>BE: PUT /api/sessions/:id  (isEnded: true)
+    BE->>DB: Update session + create completion notification
+    BE-->>FE: Session updated
+    FE-->>Client: Session complete ✅
+
+    %% ── 4. AI Coach ────────────────────────────────────────────
+    Client->>FE: Ask Coach a question
+    FE->>BE: POST /api/chatbot
+    BE->>AI: Forward question + study context
+    AI-->>BE: AI-generated response
+    BE-->>FE: Response text
+    FE-->>Client: Display answer
+
+    %% ── 5. Inactivity scheduler (background) ───────────────────
+    Note over BE,SMTP: Background job — runs every 6 hours
+    BE->>DB: Find users inactive > 3 days
+    DB-->>BE: Inactive user list
+    loop For each inactive user
+        BE->>DB: Create INACTIVITY notification
+        BE->>SMTP: Send reminder email
+        SMTP-->>Client: Email delivered 📧
+    end
+```
+
+---
+
 ## Tech Stack
 
 **Frontend**
@@ -265,6 +336,22 @@ mongorestore --uri="mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.n
 ```
 
 Verify the import in Atlas → **Browse Collections**.
+
+---
+
+### 6. Update `.env`
+
+In `Backend/.env`, replace the local URI:
+
+```env
+# Before (local)
+MONGO_URI=mongodb://localhost:27017/learning_tracker
+
+# After (Atlas)
+MONGO_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/learning_tracker?retryWrites=true&w=majority
+```
+
+Restart the backend — it will now connect to Atlas.
 
 ---
 
