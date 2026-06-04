@@ -52,7 +52,7 @@ sequenceDiagram
     FE->>BE: PUT /api/sessions/:id  (isEnded: true)
     BE->>DB: Update session + create completion notification
     BE-->>FE: Session updated
-    FE-->>Client: Session complete ✅
+    FE-->>Client: Session complete 
 
     %% ── 4. AI Coach ────────────────────────────────────────────
     Client->>FE: Ask Coach a question
@@ -69,10 +69,50 @@ sequenceDiagram
     loop For each inactive user
         BE->>DB: Create INACTIVITY notification
         BE->>SMTP: Send reminder email
-        SMTP-->>Client: Email delivered 📧
+        SMTP-->>Client: Email delivered 
     end
 ```
+## Architecture — Sequence Diagram - ver Shorter
+```
+sequenceDiagram
+    actor Client
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as MongoDB
+    participant AI as Groq AI
+    participant SMTP as Email
 
+    Client->>FE: Login
+    FE->>BE: POST /api/auth/login
+    BE->>DB: Verify user
+    BE-->>FE: JWT token
+    FE-->>Client: Dashboard
+
+    Client->>FE: Open Dashboard
+    FE->>BE: GET summary / notifications / goals
+    BE->>DB: Query data
+    BE-->>FE: Dashboard payload
+    FE-->>Client: Render
+
+    Client->>FE: Create & end session
+    FE->>BE: POST /api/sessions
+    BE->>DB: Save + check milestone
+    FE->>BE: PUT /api/sessions/:id (isEnded)
+    BE->>DB: Update + notify completion
+    FE-->>Client: Session complete 
+
+    Client->>FE: Ask Coach
+    FE->>BE: POST /api/chatbot
+    BE->>AI: Question + context
+    AI-->>BE: Response
+    FE-->>Client: Display answer
+
+    Note over BE,SMTP: Scheduler — every 6h
+    BE->>DB: Find inactive users (> 3 days)
+    BE->>DB: Create notification
+    BE->>SMTP: Send reminder email
+    SMTP-->>Client: Email 
+```
 ---
 
 ## Tech Stack
