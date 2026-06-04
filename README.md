@@ -268,22 +268,6 @@ Verify the import in Atlas → **Browse Collections**.
 
 ---
 
-### 6. Update `.env`
-
-In `Backend/.env`, replace the local URI:
-
-```env
-# Before (local)
-MONGO_URI=mongodb://localhost:27017/learning_tracker
-
-# After (Atlas)
-MONGO_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/learning_tracker?retryWrites=true&w=majority
-```
-
-Restart the backend — it will now connect to Atlas.
-
----
-
 ## Environment Variables Reference
 
 | Variable | Required | Description |
