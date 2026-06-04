@@ -295,7 +295,7 @@ body:has(.coach-layout) { background-color: #F8FAFC; }
 
 @media (max-width: 768px) {
   .coach-layout  { flex-direction: column; }
-  .coach-body    { padding: 0 16px 80px; }
+  .coach-body    { padding: 0 16px 24px; }
   .coach-grid    { grid-template-columns: 1fr; }
   .coach-banner  {
     flex-direction: column;
@@ -306,22 +306,4 @@ body:has(.coach-layout) { background-color: #F8FAFC; }
   .banner-left h2 { font-size: 22px; }
   .score-pill { width: 100%; box-sizing: border-box; }
 
-  .bottom-nav {
-    display: flex;
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    height: 60px; background: #fff;
-    border-top: 1px solid #E2E8F0;
-    z-index: 100;
-    justify-content: space-around;
-    align-items: center;
-    padding: 0 8px;
-  }
-  .bottom-nav a {
-    display: flex; flex-direction: column; align-items: center;
-    gap: 3px; color: #64748B; text-decoration: none;
-    font-size: 10px; font-weight: 600; padding: 6px 10px; border-radius: 12px;
-  }
-  .bottom-nav a.active,
-  .bottom-nav a:hover { color: #0059BB; background: #ECF5FF; }
 }

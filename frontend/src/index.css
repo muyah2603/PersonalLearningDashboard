@@ -514,12 +514,12 @@ button.btn-danger:hover { background: #dc2626; }
   .ns-focus-btns   { gap: 8px; }
   .focus-btn       { padding: 10px; font-size: 14px; }
 
-  /* Modal */
+  /* Modal — margin handled by overlay padding */
   .modal-content,
   .modal-content.pwd-modal {
-    margin: 16px;
+    margin: 0;
     padding: 24px;
-    width: calc(100% - 32px);
+    width: 100%;
     max-width: none;
   }
 

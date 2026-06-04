@@ -117,7 +117,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 40px;
-  background-color: transparent;
+  background-color: #F8FAFC;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .search-bar {
@@ -521,6 +524,7 @@ body:has(.dashboard-layout) {
     position: fixed !important;
     top: 0; left: 0;
     height: 100vh !important;
+    height: 100dvh !important;
     width: 260px !important;
     z-index: 50;
     transform: translateX(-110%);
