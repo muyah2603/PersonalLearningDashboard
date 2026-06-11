@@ -178,7 +178,6 @@ const getGoalProgress = asyncHandler(async (req, res) => {
     );
     return {
       goalId:         goal._id,
-      title:          goal.title,
       targetHours:    goal.targetHours,
       actualHours,
       completionPercent: percent,   // Fix FE-7: thống nhất field name với goal.controller

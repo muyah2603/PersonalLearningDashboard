@@ -107,7 +107,7 @@ const SessionDetail = () => {
         </div>
       </div>
 
-      <div className="ns-wrapper">
+      <div className="ns-wrapper sd-detail-wrapper">
         {/* LEFT */}
         <div className="ns-left">
           <div className="ns-form-card">
